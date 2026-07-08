@@ -46,7 +46,7 @@ function init() {
 async function guardarPoligono(data) {
   try {
     const docRef = await addDoc(collection(window.db, COLECCION), {
-      originales: data.originales.map(ll => [ll.lat, ll.lng]),
+      originales: data.originales.map(ll => ({ lat: ll.lat, lng: ll.lng })),
       region: window.regionActiva || 'alterac',
       createdAt: new Date().toISOString(),
       estilo: data.estilo,
@@ -70,8 +70,8 @@ async function cargarPoligonos() {
     console.log('[dibujo] Polígonos cargados:', snapshot.size);
     snapshot.forEach(d => {
       const datos = d.data();
-      const origs = (datos.originales || datos.latlngs || []).map(
-        ([lat, lng]) => L.latLng(lat, lng)
+      const origs = (datos.originales || datos.latlngs || []).map(o =>
+        Array.isArray(o) ? L.latLng(o[0], o[1]) : L.latLng(o.lat, o.lng)
       );
       if (origs.length >= 3) crearPoligonoDesdeDatos(origs, d.id, datos.estilo, datos.region);
     });
@@ -82,7 +82,7 @@ async function cargarPoligonos() {
 
 async function guardarActualizacion(data) {
   if (!data.firestoreId) return;
-  const obj = { originales: data.originales.map(ll => [ll.lat, ll.lng]) };
+  const obj = { originales: data.originales.map(ll => ({ lat: ll.lat, lng: ll.lng })) };
   if (data.estilo) obj.estilo = data.estilo;
   obj.updatedAt = new Date().toISOString();
   try { await updateDoc(doc(window.db, COLECCION, data.firestoreId), obj); }
