@@ -674,9 +674,13 @@ body {
 }
 
 .btn-capa {
-  background: transparent;
+  background-image: url('ui/botongris.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border: 1px solid #1a3060;
-  color: #ccc;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.87rem;
@@ -686,9 +690,9 @@ body {
   text-align: left;
   white-space: nowrap;
 }
-.btn-capa:hover  { border-color: #4285F4; color: #fff; background: rgba(66,133,244,0.1); }
-.btn-capa.activo { background: rgba(15,52,96,0.8); border-color: #4285F4; color: #fff; }
-.btn-capa.inactivo { opacity: 0.4; }
+.btn-capa:hover  { border-color: #4285F4; }
+.btn-capa.activo { background-image: url('ui/botonnaranja.png'); border-color: #4285F4; }
+.btn-capa.inactivo { opacity: 0.7; }
 
 /* Botón ▾ categorías */
 .btn-expandir-cats {
