@@ -54,6 +54,7 @@ const bounds = [[0, 0], [ALTO_MAPA, ANCHO_MAPA]];
 const mapa = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: -4, maxZoom: 0, zoomSnap: 0.25,
+  zoomControl: false,
 });
 mapa.fitBounds(bounds);
 // — Capas de imagen (de abajo hacia arriba en el mapa) —
@@ -92,10 +93,10 @@ function crearCapaTiles(ruta, zIndex) {
 const capaFisico     = crearCapaTiles('Mapas/mapa-fisico',   100); // off por defecto
 const capaBase       = crearCapaTiles('Mapas/mapa-base',     101).addTo(mapa);
 const capaNodos      = crearCapaTiles('Mapas/mapa-nodos',    102); // off por defecto
-const capaNombresImg = crearCapaTiles('Mapas/mapa-nombres',  104).addTo(mapa);
+const capaNombresImg = crearCapaTiles('Mapas/mapa-nombres',  104);
 
 const estadoImagenes = {
-  fisico: false, politico: true, nodos: false, nombresImg: true
+  fisico: false, politico: true, nodos: false, nombresImg: false
 };
 
 // — Capas de marcas —
@@ -181,7 +182,7 @@ function crearFilaImagen(emoji, label, estadoKey, capaOverlay, inicialActivo = t
 
   const btn = document.createElement('button');
   btn.className = inicialActivo ? 'btn-capa activo' : 'btn-capa inactivo';
-  btn.textContent = `${emoji} ${label}`;
+  btn.textContent = label;
   btn.addEventListener('click', () => {
     estadoImagenes[estadoKey] = !estadoImagenes[estadoKey];
     if (estadoImagenes[estadoKey]) {
@@ -197,15 +198,9 @@ function crearFilaImagen(emoji, label, estadoKey, capaOverlay, inicialActivo = t
   return fila;
 }
 
-capasControl.appendChild(crearFilaImagen('📜', 'Regiones',         'nombresImg', capaNombresImg, true));
-capasControl.appendChild(crearFilaImagen('🔵', 'Nodos Espaciales', 'nodos',      capaNodos,      false));
-capasControl.appendChild(crearFilaImagen('🗺️', 'Mapa Político',   'politico',   capaBase,       true));
-capasControl.appendChild(crearFilaImagen('🌍', 'Mapa Físico',     'fisico',     capaFisico,     false));
-
-// Separador
-const capasHr = document.createElement('hr');
-capasHr.className = 'capas-sep';
-capasControl.appendChild(capasHr);
+capasControl.appendChild(crearFilaImagen('', 'Escudos', 'nombresImg', capaNombresImg, false));
+capasControl.appendChild(crearFilaImagen('', 'Nombres', 'politico',   capaBase,       true));
+capasControl.appendChild(crearFilaImagen('', 'Mapa',    'fisico',     capaFisico,     false));
 
 // — Fila Marcas con desplegable de categorías —
 const filaMarcas = document.createElement('div');
@@ -213,7 +208,7 @@ filaMarcas.className = 'capa-fila capa-fila-marcas';
 
 const btnMarcas = document.createElement('button');
 btnMarcas.className = 'btn-capa activo';
-btnMarcas.textContent = '📌 Marcas';
+btnMarcas.textContent = 'Marcas';
 btnMarcas.addEventListener('click', () => {
   estadoCapas.marcas = !estadoCapas.marcas;
   btnMarcas.classList.toggle('activo',   estadoCapas.marcas);
@@ -223,7 +218,7 @@ btnMarcas.addEventListener('click', () => {
 
 const btnExpandirCats = document.createElement('button');
 btnExpandirCats.className = 'btn-expandir-cats';
-btnExpandirCats.textContent = '▾';
+btnExpandirCats.textContent = '';
 btnExpandirCats.title = 'Filtrar por categoría';
 
 const dropdownCats = document.createElement('div');
@@ -313,21 +308,20 @@ CATEGORIAS.forEach(cat => {
 btnExpandirCats.addEventListener('click', () => {
   const abierto = !dropdownCats.classList.contains('oculto');
   dropdownCats.classList.toggle('oculto', abierto);
-  btnExpandirCats.textContent = abierto ? '▾' : '▴';
 });
 
-filaMarcas.appendChild(btnMarcas);
 filaMarcas.appendChild(btnExpandirCats);
+filaMarcas.appendChild(btnMarcas);
 capasControl.appendChild(filaMarcas);
 capasControl.appendChild(dropdownCats);
 
 // — Fila Etiquetas —
 const filaEtiquetas = document.createElement('div');
-filaEtiquetas.className = 'capa-fila';
+filaEtiquetas.className = 'capa-fila capa-fila-etiquetas';
 
 const btnEtiquetas = document.createElement('button');
 btnEtiquetas.className = 'btn-capa activo';
-btnEtiquetas.textContent = '🏷️ Etiquetas';
+btnEtiquetas.textContent = 'Etiquetas';
 btnEtiquetas.addEventListener('click', () => {
   estadoCapas.nombres = !estadoCapas.nombres;
   btnEtiquetas.classList.toggle('activo',   estadoCapas.nombres);

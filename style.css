@@ -1,20 +1,71 @@
+@font-face {
+  font-family: 'Friz Quadrata';
+  src: url('fuentes/friz-quadrata-regular-os-5870333951e7c.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Friz Quadrata';
+  src: url('fuentes/friz-quadrata-bold-italic-os-5870341205e0f.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: #111;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+  background: url('ui/fondo.jpeg') center / cover no-repeat;
   color: #eee;
   overflow: hidden;
 }
 
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 17px;
+  background-image: url('ui/divisor.avif');
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  z-index: 10001;
+  pointer-events: none;
+}
+body::before { top: 0; }
+body::after  { bottom: 0; }
+
 .oculto { display: none !important; }
+
+/* ── BOTÓN ALTERAC ── */
+#boton-alterac {
+  position: fixed;
+  top: 5px; left: 55px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 9999;
+  padding: 0;
+}
+#boton-alterac img {
+  display: block;
+  max-width: 300px;
+  max-height: 300px;
+  height: auto;
+  width: auto;
+}
+#boton-alterac:hover img { filter: brightness(1.2); }
+
 
 /* ── MAPA ── */
 #map {
   width: 100vw;
   height: 100vh;
-  background: #111111;
+  background: transparent;
 }
+
+
 
 /* ── BARRA DE SESIÓN ── */
 #barra-sesion {
@@ -651,12 +702,13 @@ body {
 /* ── PANEL DE CAPAS ── */
 #capas-control {
   position: fixed;
-  top: 12px; right: 12px;
+  top: 27px; right: 27px;
+  transform: translate(80px, 10px);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 195px;
+  gap: 9px;
+  min-width: 440px;
 }
 
 .capa-fila {
@@ -667,6 +719,14 @@ body {
 
 .capa-fila .btn-capa { flex: 1; }
 
+.capa-fila-marcas {
+  transform: translate(-25px, 25px);
+}
+
+.capa-fila-etiquetas {
+  transform: translate(3px, 25px);
+}
+
 .capas-sep {
   border: none;
   border-top: 1px solid #1a3060;
@@ -675,40 +735,41 @@ body {
 
 .btn-capa {
   background-image: url('ui/botongris.png');
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  border: 1px solid #1a3060;
+  background-color: transparent;
+  border: none;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.87rem;
+  padding: 8px 40px 12px;
+  border-radius: 45px;
+  font-size: 1.567rem;
   cursor: pointer;
   transition: all 0.2s;
   user-select: none;
-  text-align: left;
+  text-align: center;
   white-space: nowrap;
 }
-.btn-capa:hover  { border-color: #4285F4; }
-.btn-capa.activo { background-image: url('ui/botonnaranja.png'); border-color: #4285F4; }
-.btn-capa.inactivo { opacity: 0.7; }
+.btn-capa:hover { color: #fde68a; }
+.btn-capa.activo { background-image: url('ui/botonnaranja.png'); }
+.btn-capa.inactivo { color: #aaa; }
+.btn-capa.inactivo:hover { color: #fde68a; }
 
 /* Botón ▾ categorías */
 .btn-expandir-cats {
-  background: transparent;
-  border: 1px solid #1a3060;
-  color: #888;
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  font-size: 0.78rem;
+  background: url('ui/botonredondo.png') center / contain no-repeat;
+  border: none;
+  width: 47px; height: 47px;
   cursor: pointer;
   flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
   padding: 0;
+  transform: translateX(95px);
 }
-.btn-expandir-cats:hover { border-color: #4285F4; color: #4285F4; }
+.btn-expandir-cats:hover {
+  background-image: url('ui/redondoiluminado.png');
+}
 
 /* Dropdown de categorías */
 #categorias-dropdown {

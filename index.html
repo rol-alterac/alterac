@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>El Concordato Galáctico</title>
+  <title>Alterac</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -12,12 +12,14 @@
 </head>
 <body>
 
+  <button id="boton-alterac" onclick="var m={0:'alterac',1:'stromgarde',2:'lago'};var s=+this.dataset.s||0;s=(s+1)%3;this.dataset.s=s;this.querySelector('img').src='ui/'+m[s]+'.png'"><img id="alterac-img" src="ui/alterac.png"></button>
+
   <div id="map"></div>
 
   <!-- Barra de sesión -->
   <div id="barra-sesion">
     <span id="info-usuario">Cargando...</span>
-    <button id="btn-login"  onclick="loginGoogle()"  class="oculto">🔑 Iniciar sesión con Google</button>
+    <button id="btn-login"  onclick="loginGoogle()"  class="oculto">Iniciar sesión con Google</button>
     <button id="btn-logout" onclick="logoutGoogle()" class="oculto">Cerrar sesión</button>
   </div>
 
@@ -32,7 +34,7 @@
   </div>
 
   <!-- Botón añadir marca -->
-  <button id="btn-añadir" class="oculto" onclick="activarModoPin()">📌 Añadir marca</button>
+  <button id="btn-añadir" class="oculto" onclick="activarModoPin()">Añadir marca</button>
 
   <!-- Instrucción modo marca -->
   <div id="instruccion" class="oculto">
