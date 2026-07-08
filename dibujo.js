@@ -336,6 +336,8 @@ function crearPoligonoDesdeDatos(originales, firestoreId, estiloGuardado, region
   if (!region || region === window.regionActiva) {
     grupoDibujo.addLayer(polygon);
     if (modoPintarActivo) vertices.forEach(m => grupoDibujo.addLayer(m));
+    // Reaplicar estilo después de añadir al mapa para que el SVG exista
+    actualizarPoligono(polygon, originales, estilo);
   }
 }
 
