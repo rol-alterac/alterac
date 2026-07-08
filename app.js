@@ -3,12 +3,12 @@
 // ╚══════════════════════════════════════════════╝
 
 const firebaseConfig = {
-  apiKey:            "AIzaSyB4kL_LpZkmcWOFdDRoAv75fjOLCagryYs",
-  authDomain:        "el-concordato-galactico.firebaseapp.com",
-  projectId:         "el-concordato-galactico",
-  storageBucket:     "el-concordato-galactico.firebasestorage.app",
-  messagingSenderId: "345614287049",
-  appId:             "1:345614287049:web:20f7d5486b0c5d94bd0d18"
+  apiKey:            "AIzaSyCFqj2Sk086YpgqHl81msY-9yKQHQ_W9To",
+  authDomain:        "rol-alterac.firebaseapp.com",
+  projectId:         "rol-alterac",
+  storageBucket:     "rol-alterac.firebasestorage.app",
+  messagingSenderId: "929570451692",
+  appId:             "1:929570451692:web:7ebd20ab4999b5b9f635c9"
 };
 
 const CLOUDINARY_CLOUD_NAME = "deb1ct129";
