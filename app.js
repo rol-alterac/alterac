@@ -18,6 +18,18 @@ const ALTO_MAPA  = 8192;
 const ARCHIVO_MAPA = 'mapa-base.png';
 const CAPAS_EXTRA = [];
 
+const REGIONES = {
+  alterac:    { label: 'Alterac',    ruta: 'Mapas/Alterac' },
+  stromgarde: { label: 'Stromgarde', ruta: 'Mapas/Stromgarde' },
+  lago:       { label: 'Lago',       ruta: 'Mapas/Lago' },
+};
+const TIPOS_CAPA = ['base', 'nombres', 'escudos'];
+const Z_CAPAS = { base: 101, nombres: 104, escudos: 100 };
+const NOMBRES_REGION = Object.keys(REGIONES);
+let regionActiva = 'alterac';
+window.regionActiva = regionActiva;
+const estadoCapasRegion = { base: true, nombres: false, escudos: false };
+
 // ╔══════════════════════════════════════════════╗
 // ║       A PARTIR DE AQUÍ NO TOQUES NADA       ║
 // ╚══════════════════════════════════════════════╝
@@ -31,6 +43,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChang
 
 const fbApp   = initializeApp(firebaseConfig);
 const db      = getFirestore(fbApp);
+window.db     = db;
 const auth    = getAuth(fbApp);
 const pinsCol = collection(db, 'pins');
 
@@ -57,6 +70,7 @@ const mapa = L.map('map', {
   zoomControl: false,
 });
 mapa.fitBounds(bounds);
+window.mapa = mapa;
 // — Capas de imagen (de abajo hacia arriba en el mapa) —
 const EMPTY_TILE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 const MapaTileLayer = L.GridLayer.extend({
@@ -90,14 +104,19 @@ function crearCapaTiles(ruta, zIndex) {
     updateWhenZooming: false
   });
 }
-const capaFisico     = crearCapaTiles('Mapas/mapa-fisico',   100); // off por defecto
-const capaBase       = crearCapaTiles('Mapas/mapa-base',     101).addTo(mapa);
-const capaNodos      = crearCapaTiles('Mapas/mapa-nodos',    102); // off por defecto
-const capaNombresImg = crearCapaTiles('Mapas/mapa-nombres',  104);
-
-const estadoImagenes = {
-  fisico: false, politico: true, nodos: false, nombresImg: false
-};
+const capasRegion = {};
+for (const [reg, cfg] of Object.entries(REGIONES)) {
+  capasRegion[reg] = {};
+  for (const tipo of TIPOS_CAPA) {
+    capasRegion[reg][tipo] = crearCapaTiles(`${cfg.ruta}/mapa-${tipo}`, Z_CAPAS[tipo]);
+  }
+}
+// Añadir capas por defecto de la región inicial
+for (const tipo of TIPOS_CAPA) {
+  if (estadoCapasRegion[tipo]) {
+    capasRegion[regionActiva][tipo].addTo(mapa);
+  }
+}
 
 // — Capas de marcas —
 const grupoPins    = L.layerGroup().addTo(mapa);
@@ -151,8 +170,27 @@ const CATEGORIAS = [
 const categoriasVisibles = new Set(CATEGORIAS);
 
 function debeEstarVisible(datos) {
-  return estadoCapas.marcas && categoriasVisibles.has(datos.categoria || 'Sistema');
+  const regionOk = !datos.region || datos.region === regionActiva;
+  return regionOk && estadoCapas.marcas && categoriasVisibles.has(datos.categoria || 'Sistema');
 }
+
+window.cambiarRegion = function(nuevaRegion) {
+  if (nuevaRegion === regionActiva) return;
+  // Quitar capas de la región anterior
+  for (const tipo of TIPOS_CAPA) {
+    mapa.removeLayer(capasRegion[regionActiva][tipo]);
+  }
+  regionActiva = nuevaRegion;
+  window.regionActiva = regionActiva;
+  // Poner capas de la nueva región según estado
+  for (const tipo of TIPOS_CAPA) {
+    if (estadoCapasRegion[tipo]) {
+      capasRegion[regionActiva][tipo].addTo(mapa);
+    }
+  }
+  actualizarVisibilidadMarcas();
+  if (window.actualizarVisibilidadPoligonos) window.actualizarVisibilidadPoligonos();
+};
 
 function actualizarVisibilidadMarcas() {
   for (const id of Object.keys(markersPorId)) {
@@ -175,8 +213,7 @@ function actualizarVisibilidadMarcas() {
 const capasControl = document.createElement('div');
 capasControl.id = 'capas-control';
 
-// Helper: fila con botón toggle para imagen de fondo
-function crearFilaImagen(emoji, label, estadoKey, capaOverlay, inicialActivo = true) {
+function crearFilaImagen(label, tipo, inicialActivo = true) {
   const fila = document.createElement('div');
   fila.className = 'capa-fila';
 
@@ -184,12 +221,13 @@ function crearFilaImagen(emoji, label, estadoKey, capaOverlay, inicialActivo = t
   btn.className = inicialActivo ? 'btn-capa activo' : 'btn-capa inactivo';
   btn.textContent = label;
   btn.addEventListener('click', () => {
-    estadoImagenes[estadoKey] = !estadoImagenes[estadoKey];
-    if (estadoImagenes[estadoKey]) {
-      capaOverlay.addTo(mapa);
+    estadoCapasRegion[tipo] = !estadoCapasRegion[tipo];
+    const capa = capasRegion[regionActiva][tipo];
+    if (estadoCapasRegion[tipo]) {
+      capa.addTo(mapa);
       btn.classList.replace('inactivo', 'activo');
     } else {
-      mapa.removeLayer(capaOverlay);
+      mapa.removeLayer(capa);
       btn.classList.replace('activo', 'inactivo');
     }
   });
@@ -198,9 +236,9 @@ function crearFilaImagen(emoji, label, estadoKey, capaOverlay, inicialActivo = t
   return fila;
 }
 
-capasControl.appendChild(crearFilaImagen('', 'Escudos', 'nombresImg', capaNombresImg, false));
-capasControl.appendChild(crearFilaImagen('', 'Nombres', 'politico',   capaBase,       true));
-capasControl.appendChild(crearFilaImagen('', 'Mapa',    'fisico',     capaFisico,     false));
+capasControl.appendChild(crearFilaImagen('Escudos', 'escudos', false));
+capasControl.appendChild(crearFilaImagen('Nombres', 'nombres', false));
+capasControl.appendChild(crearFilaImagen('Mapa',    'base',    true));
 
 // — Fila Marcas con desplegable de categorías —
 const filaMarcas = document.createElement('div');
@@ -335,6 +373,39 @@ btnEtiquetas.addEventListener('click', () => {
 
 filaEtiquetas.appendChild(btnEtiquetas);
 capasControl.appendChild(filaEtiquetas);
+
+// — Fila Áreas —
+const filaAreas = document.createElement('div');
+filaAreas.className = 'capa-fila capa-fila-areas';
+const btnAreas = document.createElement('button');
+btnAreas.className = 'btn-capa activo';
+btnAreas.textContent = 'Áreas';
+btnAreas.addEventListener('click', () => {
+  window.mostrarAreas = !window.mostrarAreas;
+  btnAreas.classList.toggle('activo',   window.mostrarAreas);
+  btnAreas.classList.toggle('inactivo', !window.mostrarAreas);
+  if (window.actualizarVisibilidadPoligonos) window.actualizarVisibilidadPoligonos();
+  // Si se desmarca Áreas, cerrar pincel
+  if (!window.mostrarAreas && document.querySelector('.btn-pintar-area.activo') && window.activarModoPintar) {
+    window.activarModoPintar();
+  }
+});
+
+const btnPintarArea = document.createElement('button');
+btnPintarArea.className = 'btn-pintar-area';
+btnPintarArea.title = 'Pintar Área';
+btnPintarArea.addEventListener('click', () => {
+  if (window.activarModoPintar) window.activarModoPintar();
+});
+
+filaAreas.appendChild(btnPintarArea);
+filaAreas.appendChild(btnAreas);
+capasControl.appendChild(filaAreas);
+window.mostrarAreas = true;
+
+// Mover herramientas de dibujo debajo de Áreas
+const hd = document.getElementById('herramientas-dibujo');
+if (hd) capasControl.appendChild(hd);
 
 document.body.appendChild(capasControl);
 
@@ -1236,6 +1307,7 @@ window.guardarPin = async function() {
       fotos: urlsFotos,
       subcategorias,
       autor: usuarioActual.displayName || usuarioActual.email,
+      region: regionActiva,
       creadoEn:  new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

@@ -56,6 +56,7 @@ body::after  { bottom: 0; }
   width: auto;
 }
 #boton-alterac:hover img { filter: brightness(1.2); }
+#boton-alterac.modal-abierto img { filter: brightness(0.3) saturate(0.2); pointer-events: none; }
 
 
 /* ── MAPA ── */
@@ -63,6 +64,7 @@ body::after  { bottom: 0; }
   width: 100vw;
   height: 100vh;
   background: transparent;
+  position: relative;
 }
 
 
@@ -309,6 +311,81 @@ body::after  { bottom: 0; }
   transition: all 0.2s;
 }
 #btn-añadir:hover { background: #c73652; transform: scale(1.05); }
+
+/* ── HERRAMIENTAS DE DIBUJO ── */
+#herramientas-dibujo {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transform: translate(4px, 25px);
+  position: relative;
+}
+#herramientas-dibujo::before {
+  content: '';
+  position: absolute;
+  top: -33px; left: 115px;
+  width: 200px; height: 200px;
+  background: url('ui/cadenas.png') center / contain no-repeat;
+  pointer-events: none;
+  z-index: -1;
+}
+#herramientas-dibujo.oculto { display: none !important; }
+
+#herramientas-dibujo button {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  padding: 8px 40px 12px;
+  border-radius: 45px;
+  font-size: 1.175rem;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background-image: url('ui/botongris.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#herramientas-dibujo button:hover { color: #fde68a; }
+#herramientas-dibujo button.activo {
+  background-image: url('ui/botonnaranja.png');
+  color: #fff;
+}
+
+.leaflet-polygon {
+  cursor: pointer;
+}
+
+/* ── Marcadores de vértices ── */
+.vertex-icon,
+.vertex-icon-temp {
+  background: none !important;
+  border: none !important;
+}
+.vertex-dot {
+  width: 12px;
+  height: 12px;
+  background: #ff5050;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: move;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.vertex-dot-temp {
+  width: 10px;
+  height: 10px;
+  background: #ff5050;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: crosshair;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
 
 /* ── INSTRUCCIÓN ── */
 #instruccion {
@@ -727,6 +804,10 @@ body::after  { bottom: 0; }
   transform: translate(3px, 25px);
 }
 
+.capa-fila-areas {
+  transform: translate(-24px, 25px);
+}
+
 .capas-sep {
   border: none;
   border-top: 1px solid #1a3060;
@@ -769,6 +850,24 @@ body::after  { bottom: 0; }
 }
 .btn-expandir-cats:hover {
   background-image: url('ui/redondoiluminado.png');
+}
+
+/* Botón circular Pintar Área */
+.btn-pintar-area {
+  background: url('ui/pincel-pulsado.png') center / contain no-repeat;
+  border: none;
+  width: 53px; height: 53px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transform: translateX(95px);
+}
+.btn-pintar-area:hover {
+  background-image: url('ui/pincel.png');
+  filter: brightness(1.2);
+}
+.btn-pintar-area.activo {
+  background-image: url('ui/pincel.png');
 }
 
 /* Dropdown de categorías */
@@ -1609,4 +1708,110 @@ body::after  { bottom: 0; }
   0%,  100% { box-shadow: 0 2px 10px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,200,0,0.18) !important; }
   50%       { box-shadow: 0 2px 14px rgba(0,0,0,0.6),  0 0 0 5px rgba(255,200,0,0.30) !important; }
 }
+
+/* ── MODAL ESTILO POLÍGONO ── */
+#modal-estilo {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 10002; display: flex;
+  align-items: center; justify-content: center;
+}
+#modal-estilo-caja {
+  background: #2a2a2a;
+  border: 2px solid #ff9933;
+  padding: 24px 28px;
+  width: 90%; max-width: 380px;
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+#modal-estilo-caja h2 {
+  color: #ff9933;
+  font-size: 1.15rem;
+  margin: 0 0 6px;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  letter-spacing: 0.03em;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+}
+#modal-estilo-caja label {
+  display: block; margin-top: 8px;
+  color: #ccc;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+}
+.estilo-slider-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #3a3a3a;
+  border: 1px solid #555;
+  padding: 4px 10px;
+}
+.estilo-slider-row input[type="range"] {
+  flex: 1; accent-color: #ff9933; cursor: pointer; height: 5px;
+  background: #4a4a4a;
+}
+.estilo-slider-row span {
+  font-size: 0.88rem; font-weight: bold; color: #ff9933;
+  min-width: 30px; text-align: right;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+}
+.estilo-select {
+  width: 100%; background: #3a3a3a;
+  border: 1px solid #555;
+  color: #eee;
+  padding: 7px 10px;
+  font-size: 0.85rem; outline: none; cursor: pointer;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.02em;
+}
+.estilo-select option { background: #2a2a2a; color: #eee; }
+.estilo-color {
+  width: 100%; height: 36px;
+  background: #3a3a3a; border: 1px solid #555;
+  cursor: pointer; padding: 2px;
+}
+.estilo-sep {
+  border: none;
+  border-top: 1px solid #555;
+  margin: 6px 0;
+}
+.estilo-btns {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 14px;
+}
+#btn-aplicar-estilo {
+  background: #ff9933;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 0.92rem;
+  font-weight: bold;
+  cursor: pointer; width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: all 0.15s;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+}
+#btn-aplicar-estilo:hover { background: #ffaa33; }
+
+#modal-estilo-caja .btn-secundario {
+  background: #3a3a3a;
+  border: 1px solid #555;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.82rem;
+  font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+}
+#modal-estilo-caja .btn-secundario:hover {
+  border-color: #ff9933;
+  color: #fff;
+}
+
+#modal-estilo-caja::-webkit-scrollbar { width: 5px; }
+#modal-estilo-caja::-webkit-scrollbar-track { background: #2a2a2a; }
+#modal-estilo-caja::-webkit-scrollbar-thumb { background: #666; }
+#modal-estilo-caja::-webkit-scrollbar-thumb:hover { background: #888; }
 
