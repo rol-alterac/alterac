@@ -395,6 +395,7 @@ const btnPintarArea = document.createElement('button');
 btnPintarArea.className = 'btn-pintar-area';
 btnPintarArea.title = 'Pintar Área';
 btnPintarArea.addEventListener('click', () => {
+  if (!usuarioActual) { alert('Debes iniciar sesión para crear áreas.'); return; }
   if (window.activarModoPintar) window.activarModoPintar();
 });
 
@@ -417,6 +418,7 @@ let usuarioActual = null;
 
 onAuthStateChanged(auth, (usuario) => {
   usuarioActual = usuario;
+  window.usuarioActual = usuario;
 
   // Gestionar suscripción a lecturas del usuario
   if (readsUnsubscribe) { readsUnsubscribe(); readsUnsubscribe = null; }

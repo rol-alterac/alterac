@@ -50,6 +50,7 @@ async function guardarPoligono(data) {
       region: window.regionActiva || 'alterac',
       createdAt: new Date().toISOString(),
       estilo: data.estilo,
+      autor: (window.usuarioActual && (window.usuarioActual.displayName || window.usuarioActual.email)) || 'anónimo',
     });
     data.firestoreId = docRef.id;
   } catch (e) { console.error('Error guardando polígono:', e); }
@@ -77,6 +78,7 @@ async function guardarActualizacion(data) {
   if (!data.firestoreId) return;
   const obj = { originales: data.originales.map(ll => [ll.lat, ll.lng]) };
   if (data.estilo) obj.estilo = data.estilo;
+  obj.updatedAt = new Date().toISOString();
   try { await updateDoc(doc(window.db, COLECCION, data.firestoreId), obj); }
   catch (e) { console.error('Error actualizando polígono:', e); }
 }
@@ -127,6 +129,7 @@ const ESTILO_DEFECTO = {
 // ═══════════════════════════════════════════════
 
 window.activarModoPintar = function() {
+  if (!window.usuarioActual) { alert('Debes iniciar sesión para crear áreas.'); return; }
   modoPintarActivo = !modoPintarActivo;
   const tools = document.getElementById('herramientas-dibujo');
   const pincelBtn = document.querySelector('.btn-pintar-area');
