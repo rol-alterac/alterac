@@ -11,7 +11,7 @@ const firebaseConfig = {
   appId:             "1:929570451692:web:7ebd20ab4999b5b9f635c9"
 };
 
-const CLOUDINARY_CLOUD_NAME = "deb1ct129";
+const CLOUDINARY_CLOUD_NAME = "s30rldoa";
 const CLOUDINARY_PRESET     = "mapa-fotos";
 const ANCHO_MAPA = 8192;
 const ALTO_MAPA  = 8192;
