@@ -53,7 +53,10 @@ async function guardarPoligono(data) {
       autor: (window.usuarioActual && (window.usuarioActual.displayName || window.usuarioActual.email)) || 'anónimo',
     });
     data.firestoreId = docRef.id;
-  } catch (e) { console.error('Error guardando polígono:', e); }
+  } catch (e) {
+    console.error('Error guardando polígono:', e);
+    alert('Error al guardar el área en Firestore. Revisa la consola (F12) para más detalles.');
+  }
 }
 
 async function borrarPoligonoFirestore(id) {
@@ -64,6 +67,7 @@ async function borrarPoligonoFirestore(id) {
 async function cargarPoligonos() {
   try {
     const snapshot = await getDocs(collection(window.db, COLECCION));
+    console.log('[dibujo] Polígonos cargados:', snapshot.size);
     snapshot.forEach(d => {
       const datos = d.data();
       const origs = (datos.originales || datos.latlngs || []).map(
@@ -71,7 +75,9 @@ async function cargarPoligonos() {
       );
       if (origs.length >= 3) crearPoligonoDesdeDatos(origs, d.id, datos.estilo, datos.region);
     });
-  } catch (e) { console.error('Error cargando polígonos:', e); }
+  } catch (e) {
+    console.error('Error cargando polígonos:', e);
+  }
 }
 
 async function guardarActualizacion(data) {
