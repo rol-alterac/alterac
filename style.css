@@ -200,7 +200,7 @@ body::after  { bottom: 0; }
   transform-origin: top left;
 }
 #wnd-titulo-body h2 { font-size: 1.4rem; color: #ffffff; margin-bottom: 6px; padding-right: 40px; }
-#wnd-titulo-body .categoria { font-size: 0.82rem; color: #4285F4; margin-bottom: 12px; letter-spacing: 0.03em; }
+#wnd-titulo-body .categoria { font-size: 0.82rem; color: #f59e0b; margin-bottom: 12px; letter-spacing: 0.03em; }
 
 /* ── VENTANA TEXTO (descripción + subcats) ── */
 #wnd-texto {
@@ -269,7 +269,7 @@ body::after  { bottom: 0; }
   box-sizing: border-box;
   padding: 8px 12px 12px;
 }
-#wnd-botones-body .autor { font-size: 0.8rem; color: #4285F4; margin-top: 0; padding-top: 0; }
+#wnd-botones-body .autor { font-size: 0.8rem; color: #f59e0b; margin-top: 0; padding-top: 0; }
 #wnd-botones-body .btns-accion {
   display: grid;
   grid-template-columns: auto auto;
@@ -1092,7 +1092,7 @@ body::after  { bottom: 0; }
    FRANJAS DE SUBCATEGORÍAS EN EL PANEL
 ══════════════════════════════ */
 .subcat-franja {
-  border-top: 1px solid #0f3460;
+  border-top: 1px solid #555;
   margin-top: 0;
   margin-bottom: 0;
   overflow: hidden;
@@ -1137,7 +1137,7 @@ body::after  { bottom: 0; }
 
 .subcat-franja-cat {
   font-size: 0.76rem;
-  color: #4285F4;
+  color: #aaa;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1148,7 +1148,7 @@ body::after  { bottom: 0; }
 .btn-subcat-toggle {
   background: transparent;
   border: none;
-  color: #4285F4;
+  color: #aaa;
   font-size: 0.8rem;
   cursor: pointer;
   padding: 2px 5px;
