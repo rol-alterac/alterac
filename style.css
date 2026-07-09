@@ -595,7 +595,7 @@ body::after  { bottom: 0; }
 
 /* Resaltar al pasar el ratón (solo dentro del editor) */
 .editor-content .img-inline:hover {
-  border-color: #4285F4;
+  border-color: #888;
 }
 
 /* Barra de controles */
@@ -603,8 +603,8 @@ body::after  { bottom: 0; }
   display: flex;
   align-items: center;
   gap: 3px;
-  background: #0a2240;
-  border: 1px solid #1a4a8a;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #555;
   border-radius: 6px 6px 0 0;
   padding: 4px 7px;
   flex-wrap: nowrap;
@@ -630,13 +630,13 @@ body::after  { bottom: 0; }
   line-height: 1;
 }
 .iic-btn:hover {
-  background: #1a4a8a;
-  border-color: #4285F4;
+  background: #2a1f00;
+  border-color: #888;
   color: #fff;
 }
 .iic-btn.activo {
-  background: #1a4a8a;
-  border-color: #4285F4;
+  background: #2a1f00;
+  border-color: #888;
   color: #fff;
 }
 .iic-btn.iic-del { color: #e94560; }
@@ -647,7 +647,7 @@ body::after  { bottom: 0; }
   display: inline-block;
   width: 1px;
   height: 16px;
-  background: #1a4a8a;
+  background: #555;
   margin: 0 3px;
   flex-shrink: 0;
 }
