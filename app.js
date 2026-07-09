@@ -128,16 +128,6 @@ const response = await fetch('./categorias.json');
 const CATEGORIAS = await response.json();
 const categoriasVisibles = new Set(CATEGORIAS);
 
-// Populate static edit-categoria select
-const editSel = document.getElementById('edit-categoria');
-if (editSel) {
-  CATEGORIAS.forEach(c => {
-    const o = document.createElement('option');
-    o.value = c; o.textContent = c;
-    editSel.appendChild(o);
-  });
-}
-
 function debeEstarVisible(datos) {
   const regionOk = !datos.region || datos.region === regionActiva;
   return regionOk && estadoCapas.marcas && categoriasVisibles.has(datos.categoria || 'Sistema');
@@ -688,10 +678,9 @@ window.insertarImagenEditor = function() {
     const file = fileInput.files[0];
     if (!file) return;
 
-    const isEdit  = editorCapturado && editorCapturado.id === 'edit-descripcion-editor';
-    const barraId = isEdit ? 'edit-progreso-barra' : 'progreso-barra';
-    const textoId = isEdit ? 'edit-progreso-texto' : 'progreso-texto';
-    const cajaEl  = document.getElementById(isEdit ? 'edit-progreso-caja' : 'progreso-caja');
+    const cajaEl  = document.getElementById('progreso-caja');
+    const barraId = 'progreso-barra';
+    const textoId = 'progreso-texto';
 
     cajaEl.classList.remove('oculto');
     try {
@@ -1243,9 +1232,9 @@ window.abrirModal = function() {
 
   // Foto
   document.getElementById('wnd-imagen-body').innerHTML = `
+    <div id="preview-fotos" style="margin-bottom:10px"></div>
     <label class="crear-label">Foto Principal:</label>
     <input type="file" id="input-fotos" accept="image/*" />
-    <div id="preview-fotos"></div>
     <div id="progreso-caja" class="oculto">
       <div id="progreso-barra"></div>
       <span id="progreso-texto">Subiendo fotos...</span>
@@ -1528,80 +1517,121 @@ window.abrirModalEdicion = function() {
 
   fotosExistentes = [...(marca.fotos || [])];
 
-  document.getElementById('edit-nombre').value = marca.nombre;
-  document.getElementById('edit-categoria').value = marca.categoria || 'Sistema';
+  // Título + Categoría (same as create, pre-filled)
+  const titBody = document.getElementById('wnd-titulo-body');
+  titBody.innerHTML = '';
 
-  // Cargar HTML rico (o convertir texto plano legacy)
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.id = 'input-nombre'; inp.className = 'crear-input';
+  inp.placeholder = 'Título...';
+  inp.value = marca.nombre;
+  titBody.appendChild(inp);
+
+  const sel = document.createElement('select');
+  sel.id = 'input-categoria'; sel.className = 'crear-select';
+  sel.style.marginTop = '6px';
+  CATEGORIAS.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c; sel.appendChild(o);
+  });
+  titBody.appendChild(sel);
+  sel.value = marca.categoria || 'Sistema Genérico';
+
+  // Editor (same as create, pre-filled)
+  document.getElementById('wnd-texto-body').innerHTML = `
+    <div class="toolbar-caja"><div class="editor-toolbar">
+      <button type="button" onclick="formatText('bold')"      title="Negrita"><b>N</b></button>
+      <button type="button" onclick="formatText('italic')"    title="Cursiva"><i>C</i></button>
+      <button type="button" onclick="formatText('underline')" title="Subrayado"><u>S</u></button>
+      <div class="toolbar-sep"></div>
+      <select onchange="formatSize(this)" title="Tamaño de texto">
+        <option value="3">Normal</option>
+        <option value="1">Pequeño</option>
+        <option value="5">Grande</option>
+        <option value="7">Muy grande</option>
+      </select>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="insertarImagenEditor()" title="Insertar imagen en el texto">🖼️</button>
+      <div class="toolbar-sep"></div>
+      <button type="button" class="btn-color-texto" onclick="abrirColorTexto(this)" title="Color de texto"><span class="color-preview-texto"></span></button>
+      <button type="button" class="btn-color-fondo" onclick="abrirColorFondo(this)" title="Resaltar texto"><span class="color-preview-fondo"></span></button>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="abrirMenuCodigo(this)" title="Código inline o bloque"><span class="ico-code">&lt;/&gt;</span></button>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="abrirModalTabla()" title="Insertar tabla">⊞</button>
+    </div></div>
+    <div id="input-descripcion-editor" class="editor-content" contenteditable="true"
+         data-placeholder="Escribe lo que quieras..."></div>
+    <div id="nuevas-subcats-wrap" style="margin-top:8px"></div>
+    <button type="button" class="btn-añadir-subcat" onclick="añadirSubcatForm('nuevo')" style="margin-bottom:8px">Añadir Subcategoría</button>
+  `;
+
+  // Pre-fill description
   const desc = marca.descripcion || '';
-  document.getElementById('edit-descripcion-editor').innerHTML =
+  document.getElementById('input-descripcion-editor').innerHTML =
     desc.startsWith('<') ? desc : desc.replace(/\n/g, '<br>');
-  reinjectImgControls(document.getElementById('edit-descripcion-editor'));
+  reinjectImgControls(document.getElementById('input-descripcion-editor'));
 
-  document.getElementById('edit-foto-input').value = '';
-  document.getElementById('edit-preview-nuevas').innerHTML = '';
-  document.getElementById('edit-progreso-caja').classList.add('oculto');
-  document.getElementById('edit-progreso-barra').style.width = '0%';
-
-  renderizarFotosExistentes();
-
-  // Cargar subcategorías existentes
-  const editWrap = document.getElementById('edit-subcats-wrap');
-  editWrap.innerHTML = '';
+  // Pre-fill subcategorías
+  const wrap = document.getElementById('nuevas-subcats-wrap');
   (marca.subcategorias || []).forEach((sub, i) => {
-    editWrap.appendChild(crearFormSubcat('edit', { ...sub, fotos: sub.fotos || [], dataId: i }));
+    wrap.appendChild(crearFormSubcat('nuevo', { ...sub, fotos: sub.fotos || [], dataId: i }));
   });
 
-  document.getElementById('modal-edicion').classList.remove('oculto');
-};
-
-function renderizarFotosExistentes() {
-  const container = document.getElementById('edit-fotos-existentes');
-  if (fotosExistentes.length === 0) {
-    container.innerHTML = '<p style="color:#555;font-size:0.82rem;margin-top:4px;">Sin foto</p>';
-    return;
-  }
-  container.innerHTML = fotosExistentes.map(url => `
-    <div class="foto-existente">
-      <img src="${url}" />
+  // Foto (same as create, show existing)
+  document.getElementById('wnd-imagen-body').innerHTML = `
+    <div id="preview-fotos" style="margin-bottom:10px">${(marca.fotos || []).map(url =>
+      `<img src="${url}" style="width:65px;height:65px;object-fit:cover;border-radius:5px;" />`
+    ).join('')}</div>
+    <label class="crear-label">Foto Principal:</label>
+    <input type="file" id="input-fotos" accept="image/*" />
+    <div id="progreso-caja" class="oculto">
+      <div id="progreso-barra"></div>
+      <span id="progreso-texto">Subiendo fotos...</span>
     </div>
-  `).join('');
-}
+  `;
 
-window.reemplazarFoto = function() {
-  document.getElementById('edit-foto-input').click();
-};
-document.getElementById('edit-foto-input').addEventListener('change', async function() {
-  if (!this.files || this.files.length === 0) return;
-  fotosExistentes = [];
-  const file = this.files[0];
-  const preview = document.getElementById('edit-preview-nuevas');
-  preview.innerHTML = '';
-  const img = document.createElement('img');
-  img.src = URL.createObjectURL(file);
-  preview.appendChild(img);
-  const url = await subirFotoCloudinaryElem(file,
-    document.getElementById('edit-progreso-barra'),
-    document.getElementById('edit-progreso-texto'));
-  if (url) {
-    fotosExistentes = [url];
-    renderizarFotosExistentes();
+  document.getElementById('input-fotos').addEventListener('change', function() {
+    const preview = document.getElementById('preview-fotos');
     preview.innerHTML = '';
-    document.getElementById('edit-progreso-caja').classList.add('oculto');
-  }
-});
+    Array.from(this.files).forEach(file => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.style.cssText = 'width:65px;height:65px;object-fit:cover;border-radius:5px;';
+      preview.appendChild(img);
+    });
+  });
+
+  // Botones
+  document.getElementById('wnd-botones-body').innerHTML = `
+    <div class="crear-btns">
+      <button id="btn-guardar" class="crear-btn" onclick="guardarEdicion()">Guardar cambios</button>
+      <button class="crear-btn" onclick="cerrarModalEdicion()">Cancelar</button>
+    </div>
+  `;
+
+  // Aplicar posiciones
+  if (window.aplicarCrearPos) window.aplicarCrearPos();
+
+  // Mostrar ventanas
+  document.querySelectorAll('.ventana-panel').forEach(w => w.classList.remove('oculto'));
+  document.getElementById('wnd-cerrar').classList.remove('oculto');
+};
 
 window.cerrarModalEdicion = function() {
-  document.getElementById('modal-edicion').classList.add('oculto');
+  const marca = marcaAbierta;
   fotosExistentes = [];
-  document.getElementById('edit-subcats-wrap').innerHTML = '';
+  document.getElementById('nuevas-subcats-wrap').innerHTML = '';
+  cerrarPanel();
+  if (marca) abrirPanel(marca);
 };
 
-
 window.guardarEdicion = async function() {
-  const nombre         = document.getElementById('edit-nombre').value.trim();
-  const categoria      = document.getElementById('edit-categoria').value;
-  const descripcion    = limpiarEditorHTML(document.getElementById('edit-descripcion-editor').innerHTML.trim());
-  const btnGuardar     = document.getElementById('btn-guardar-edicion');
+  const nombre      = document.getElementById('input-nombre').value.trim();
+  const categoria   = document.getElementById('input-categoria').value;
+  const descripcion = limpiarEditorHTML(document.getElementById('input-descripcion-editor').innerHTML.trim());
+  const archivos    = document.getElementById('input-fotos').files;
+  const btnGuardar  = document.getElementById('btn-guardar');
 
   if (!nombre)        { alert('Escribe un nombre para el lugar.'); return; }
   if (!usuarioActual) { alert('Debes iniciar sesión.'); return; }
@@ -1610,10 +1640,25 @@ window.guardarEdicion = async function() {
   btnGuardar.textContent = 'Guardando...';
 
   try {
-    const todasLasFotos = fotosExistentes;
-    const subcategorias = await recogerSubcats('edit-subcats-wrap');
+    const urlsNuevas = [];
+    if (archivos.length > 0) {
+      document.getElementById('progreso-caja').classList.remove('oculto');
+      for (let i = 0; i < archivos.length; i++) {
+        urlsNuevas.push(await subirFotoCloudinary(archivos[i], i, archivos.length));
+      }
+      document.getElementById('progreso-barra').style.width = '100%';
+      document.getElementById('progreso-texto').textContent = 'Fotos subidas ✓';
+    }
 
-    await updateDoc(doc(db, 'pins', marcaAbierta.id), { nombre, categoria, descripcion, fotos: todasLasFotos, subcategorias, updatedAt: new Date().toISOString() });
+    const subcategorias = await recogerSubcats('nuevas-subcats-wrap');
+    const todasLasFotos = [...fotosExistentes, ...urlsNuevas];
+
+    await updateDoc(doc(db, 'pins', marcaAbierta.id), {
+      nombre, categoria, descripcion,
+      fotos: todasLasFotos,
+      subcategorias,
+      updatedAt: new Date().toISOString(),
+    });
 
     marcaAbierta.nombre      = nombre;
     marcaAbierta.categoria   = categoria;
@@ -1631,7 +1676,7 @@ window.guardarEdicion = async function() {
       : 'Error al guardar. Abre la consola (F12) para ver el detalle.');
   } finally {
     btnGuardar.disabled = false;
-    btnGuardar.textContent = '💾 Guardar cambios';
+    btnGuardar.textContent = 'Guardar cambios';
   }
 };
 

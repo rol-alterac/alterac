@@ -67,63 +67,6 @@
   </div>
 
   <!-- Modal edición marca -->
-  <div id="modal-edicion" class="oculto">
-    <div id="modal-edicion-caja">
-      <h2>✏️ Editar marca</h2>
-
-      <label>Título *</label>
-      <input type="text" id="edit-nombre" placeholder="Escribe lo que quieras..." />
-
-      <label>Categoría *</label>
-      <select id="edit-categoria"></select>
-
-      <label>Descripción</label>
-      <div class="editor-toolbar">
-        <button type="button" onclick="formatText('bold')"      title="Negrita"><b>N</b></button>
-        <button type="button" onclick="formatText('italic')"    title="Cursiva"><i>C</i></button>
-        <button type="button" onclick="formatText('underline')" title="Subrayado"><u>S</u></button>
-        <div class="toolbar-sep"></div>
-        <select onchange="formatSize(this)" title="Tamaño de texto">
-          <option value="3">Normal</option>
-          <option value="1">Pequeño</option>
-          <option value="5">Grande</option>
-          <option value="7">Muy grande</option>
-        </select>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="insertarImagenEditor()" title="Insertar imagen en el texto">🖼️</button>
-        <div class="toolbar-sep"></div>
-        <button type="button" class="btn-color-texto" onclick="abrirColorTexto(this)" title="Color de texto"><span class="color-preview-texto"></span></button>
-        <button type="button" class="btn-color-fondo" onclick="abrirColorFondo(this)" title="Resaltar texto"><span class="color-preview-fondo"></span></button>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="abrirMenuCodigo(this)" title="Código inline o bloque"><span class="ico-code">&lt;/&gt;</span></button>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="abrirModalTabla()" title="Insertar tabla">⊞</button>
-      </div>
-      <div id="edit-descripcion-editor" class="editor-content" contenteditable="true"
-           data-placeholder="Escribe lo que quieras..."></div>
-
-      <label>Foto Principal</label>
-      <div id="edit-fotos-existentes"></div>
-      <div id="edit-foto-reemplazar">
-        <button type="button" onclick="reemplazarFoto()">Reemplazar foto</button>
-      </div>
-      <input type="file" id="edit-foto-input" accept="image/*" style="display:none" />
-      <div id="edit-preview-nuevas"></div>
-
-      <div id="edit-progreso-caja" class="oculto">
-        <div id="edit-progreso-barra"></div>
-        <span id="edit-progreso-texto">Subiendo fotos...</span>
-      </div>
-
-      <!-- Subcategorías edición -->
-      <div id="edit-subcats-wrap"></div>
-      <button type="button" class="btn-añadir-subcat" onclick="añadirSubcatForm('edit')">➕ Añadir Subcategoría</button>
-
-      <button id="btn-guardar-edicion" onclick="guardarEdicion()">💾 Guardar cambios</button>
-      <button class="btn-secundario" onclick="cerrarModalEdicion()">Cancelar</button>
-    </div>
-  </div>
-
   <!-- Modal tamaño de icono -->
   <div id="modal-tamaño" class="oculto">
     <div id="modal-tamaño-caja">
@@ -198,7 +141,7 @@
       png: { top: -295, left: 434, scale: 175 },
       tit: { top: 85, left: 480, scale: 121, 'inp-h': 32, 'inp-w': 578, 'sel-w': 372 },
       txt: { top: 185, left: 478, w: 616, h: 540 },
-      img: { top: 356, left: 1113, scale: 97 },
+      img: { top: 266, left: 1113, scale: 97 },
       btns: { top: 641, left: 1122, gap: 9, btnW: 144, btnH: 41, scale: 100 },
       cerrar: { top: 713, left: 1414, scale: 125 },
     };

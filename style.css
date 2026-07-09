@@ -556,50 +556,8 @@ body::after  { bottom: 0; }
 
 /* ── MODAL NUEVA MARCA ── */
 /* ── MODAL EDICIÓN MARCA ── */
-#modal-edicion {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.72);
-  z-index: 2000; display: flex;
-  align-items: center; justify-content: center;
-}
 
-#modal-edicion-caja {
-  background: #16213e;
-  border: 2px solid #4285F4;
-  border-radius: 14px; padding: 28px;
-  width: 90%; max-width: 460px;
-  max-height: 88vh; overflow-y: auto;
-}
-
-#modal-edicion-caja h2 { color: #4285F4; margin-bottom: 18px; font-size: 1.3rem; }
-
-#modal-edicion-caja label {
-  display: block; margin: 12px 0 5px;
-  color: #999; font-size: 0.85rem;
-}
-
-#modal-edicion-caja input[type="text"] {
-  width: 100%; background: #0f3460;
-  border: 1px solid #1a4a8a; border-radius: 7px;
-  color: #fff; padding: 9px 11px;
-  font-size: 0.92rem; outline: none;
-}
-#modal-edicion-caja select {
-  width: 100%; background: #0f3460;
-  border: 1px solid #1a4a8a; border-radius: 7px;
-  color: #fff; padding: 9px 11px;
-  font-size: 0.92rem; outline: none; cursor: pointer;
-}
-#modal-edicion-caja select option { background: #16213e; }
-#modal-edicion-caja input[type="file"] { margin-top: 4px; color: #888; font-size: 0.85rem; }
-
-/* ── FOTOS EXISTENTES (edición) ── */
-#edit-fotos-existentes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 5px;
-}
+/* ── FOTOS EXISTENTES (usado en subcategorías) ── */
 
 .foto-existente {
   position: relative;
@@ -620,25 +578,6 @@ body::after  { bottom: 0; }
   padding: 0; line-height: 1;
 }
 .btn-quitar-foto:hover { background: #c73652; }
-
-#edit-preview-nuevas { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
-#edit-preview-nuevas img { width: 65px; height: 65px; object-fit: cover; border-radius: 5px; }
-
-#edit-progreso-caja {
-  margin-top: 12px; background: #0f3460;
-  border-radius: 8px; overflow: hidden;
-}
-#edit-progreso-barra { height: 7px; background: #4285F4; width: 0%; transition: width 0.3s; }
-#edit-progreso-texto { display: block; text-align: center; font-size: 0.78rem; color: #888; padding: 5px; }
-
-#btn-guardar-edicion {
-  background: #4285F4; color: #fff; border: none;
-  padding: 12px; border-radius: 9px;
-  font-size: 0.95rem; font-weight: bold;
-  cursor: pointer; margin-top: 18px; width: 100%;
-}
-#btn-guardar-edicion:hover { background: #3367d6; }
-#btn-guardar-edicion:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── IMÁGENES INLINE EN EDITOR ── */
 
@@ -999,15 +938,6 @@ body::after  { bottom: 0; }
 #wnd-botones-body .crear-btn:disabled { opacity: 0.5; cursor: not-allowed; color: #888; }
 #wnd-botones-body #btn-guardar {
   background-image: url('ui/botonnaranja.png');
-}
-
-/* ── OVERRIDES MODAL EDICIÓN MARCA ── */
-#modal-edicion #modal-edicion-caja {
-  max-width: 736px;
-}
-#modal-edicion .editor-content {
-  min-height: 180px;
-  max-height: 400px;
 }
 
 /* ── MODAL TAMAÑO DE ICONO ── */
