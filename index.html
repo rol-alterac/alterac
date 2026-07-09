@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -325,72 +325,7 @@
       </div>
     </div>
   </div>
-
-  <div id="temp-controls" class="oculto">
-    <div class="temp-header">
-      <strong>Ajustar Panel</strong>
-      <button onclick="document.getElementById('temp-controls').classList.toggle('oculto')">✕</button>
-    </div>
-    <div class="temp-body">
-      <div class="temp-seccion">
-        <strong>Botones</strong>
-        <label>Escala <input type="range" min="50" max="500" value="100" data-prop="--btn-scale"><span class="temp-val">100</span></label>
-        <label>Ancho <input type="range" min="40" max="300" value="144" data-prop="--btn-w"><span class="temp-val">144</span></label>
-        <label>Alto <input type="range" min="20" max="100" value="41" data-prop="--btn-h"><span class="temp-val">41</span></label>
-        <label>Sep. <input type="range" min="0" max="30" value="9" data-prop="--btns-gap"><span class="temp-val">9</span></label>
-        <label>Top ventana <input type="range" min="-1200" max="1200" value="430" data-prop="--btns-wnd-top"><span class="temp-val">430</span></label>
-        <label>Left ventana <input type="range" min="-1200" max="1700" value="1122" data-prop="--btns-wnd-left"><span class="temp-val">1122</span></label>
-      </div>
-    </div>
-  </div>
-  <button id="btn-temp-controls" onclick="var c=document.getElementById('temp-controls');c.classList.toggle('oculto');this.textContent=c.classList.contains('oculto')?'⚙ Ajustar Panel':'✕ Cerrar'">⚙ Ajustar Panel</button>
-
+  
   
   <script type="module" src="app.js"></script>
   <script type="module" src="dibujo.js"></script>
-
-  <script>
-    document.querySelectorAll('#temp-controls input[type="range"]').forEach(input => {
-      const span = input.nextElementSibling;
-      span.contentEditable = 'true';
-      // Aplicar valor inicial
-      const prop = input.dataset.prop;
-      if (prop === '--png-wnd-top' || prop === '--png-wnd-left' || prop === '--png-scale') {
-        aplicarProp(prop, input.value);
-      }
-      // Slider → valor
-      input.addEventListener('input', function() {
-        const val = this.value;
-        span.textContent = val;
-        aplicarProp(this.dataset.prop, val);
-      });
-      // Editar valor manualmente
-      span.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          this.blur();
-        }
-      });
-      span.addEventListener('blur', function() {
-        let val = parseInt(this.textContent, 10);
-        if (isNaN(val)) { val = parseInt(input.value, 10); this.textContent = val; }
-        val = Math.max(parseInt(input.min, 10), Math.min(parseInt(input.max, 10), val));
-        this.textContent = val;
-        input.value = val;
-        aplicarProp(input.dataset.prop, val);
-      });
-    });
-    function aplicarProp(prop, val) {
-      if (prop === '--png-wnd-top') {
-        document.getElementById('wnd-png').style.top = val + 'px';
-      } else if (prop === '--png-wnd-left') {
-        document.getElementById('wnd-png').style.left = val + 'px';
-      } else if (prop === '--png-scale') {
-        document.getElementById('wnd-png').style.transform = 'scale(' + (val / 100) + ')';
-      } else if (prop.endsWith('-scale')) {
-        document.documentElement.style.setProperty(prop, val / 100);
-      } else {
-        document.documentElement.style.setProperty(prop, val + 'px');
-      }
-    }
-  </script>
