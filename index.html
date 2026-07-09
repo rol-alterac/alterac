@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="ui/favicon.png">
 </head>
 <body>
 
@@ -23,15 +24,31 @@
     <button id="btn-logout" onclick="logoutGoogle()" class="oculto">Cerrar sesión</button>
   </div>
 
-  <!-- Panel lateral -->
-  <div id="panel" class="oculto">
-    <button class="btn-cerrar" onclick="cerrarPanel()">✕</button>
-    <div id="panel-subcat-icons"></div>
-    <div id="panel-scroll">
-      <div id="panel-contenido"></div>
-    </div>
-    <div id="panel-resize-handle" title="Arrastrar para redimensionar"></div>
+  <!-- Ventanas independientes del panel -->
+  <div id="wnd-png" class="ventana-panel oculto"></div>
+
+  <div id="wnd-titulo" class="ventana-panel oculto">
+    <div class="ventana-barra" onmousedown="iniciarArrastre(this.parentElement, event)"></div>
+    <div class="ventana-cuerpo" id="wnd-titulo-body"></div>
   </div>
+
+  <div id="wnd-texto" class="ventana-panel oculto">
+    <div class="ventana-barra" onmousedown="iniciarArrastre(this.parentElement, event)"></div>
+    <div id="wnd-texto-body"></div>
+  </div>
+
+  <div id="wnd-imagen" class="ventana-panel oculto">
+    <div class="ventana-barra" onmousedown="iniciarArrastre(this.parentElement, event)"></div>
+    <div class="ventana-cuerpo" id="wnd-imagen-body"></div>
+  </div>
+
+  <div id="wnd-botones" class="ventana-panel oculto">
+    <div class="ventana-barra" onmousedown="iniciarArrastre(this.parentElement, event)"></div>
+    <div class="ventana-cuerpo" id="wnd-botones-body"></div>
+  </div>
+
+  <!-- Botón cerrar global -->
+  <div id="wnd-cerrar" class="oculto" onclick="cerrarPanel()"></div>
 
   <!-- Herramientas de dibujo -->
   <div id="herramientas-dibujo" class="oculto">
@@ -127,8 +144,8 @@
       <div id="input-descripcion-editor" class="editor-content" contenteditable="true"
            data-placeholder="Escribe lo que quieras..."></div>
 
-      <label>Fotos de pie de página (Pueden ser varias):</label>
-      <input type="file" id="input-fotos" accept="image/*" multiple />
+      <label>Foto Principal:</label>
+      <input type="file" id="input-fotos" accept="image/*" />
       <div id="preview-fotos"></div>
 
       <div id="progreso-caja" class="oculto">
@@ -223,11 +240,12 @@
       <div id="edit-descripcion-editor" class="editor-content" contenteditable="true"
            data-placeholder="Escribe lo que quieras..."></div>
 
-      <label>Fotos actuales</label>
+      <label>Foto Principal</label>
       <div id="edit-fotos-existentes"></div>
-
-      <label>Añadir nuevas fotos</label>
-      <input type="file" id="edit-fotos-nuevas" accept="image/*" multiple />
+      <div id="edit-foto-reemplazar">
+        <button type="button" onclick="reemplazarFoto()">Reemplazar foto</button>
+      </div>
+      <input type="file" id="edit-foto-input" accept="image/*" style="display:none" />
       <div id="edit-preview-nuevas"></div>
 
       <div id="edit-progreso-caja" class="oculto">
@@ -308,8 +326,71 @@
     </div>
   </div>
 
+  <div id="temp-controls" class="oculto">
+    <div class="temp-header">
+      <strong>Ajustar Panel</strong>
+      <button onclick="document.getElementById('temp-controls').classList.toggle('oculto')">✕</button>
+    </div>
+    <div class="temp-body">
+      <div class="temp-seccion">
+        <strong>Botones</strong>
+        <label>Escala <input type="range" min="50" max="500" value="100" data-prop="--btn-scale"><span class="temp-val">100</span></label>
+        <label>Ancho <input type="range" min="40" max="300" value="144" data-prop="--btn-w"><span class="temp-val">144</span></label>
+        <label>Alto <input type="range" min="20" max="100" value="41" data-prop="--btn-h"><span class="temp-val">41</span></label>
+        <label>Sep. <input type="range" min="0" max="30" value="9" data-prop="--btns-gap"><span class="temp-val">9</span></label>
+        <label>Top ventana <input type="range" min="-1200" max="1200" value="430" data-prop="--btns-wnd-top"><span class="temp-val">430</span></label>
+        <label>Left ventana <input type="range" min="-1200" max="1700" value="1122" data-prop="--btns-wnd-left"><span class="temp-val">1122</span></label>
+      </div>
+    </div>
+  </div>
+  <button id="btn-temp-controls" onclick="var c=document.getElementById('temp-controls');c.classList.toggle('oculto');this.textContent=c.classList.contains('oculto')?'⚙ Ajustar Panel':'✕ Cerrar'">⚙ Ajustar Panel</button>
+
+  
   <script type="module" src="app.js"></script>
   <script type="module" src="dibujo.js"></script>
 
-</body>
-</html>
+  <script>
+    document.querySelectorAll('#temp-controls input[type="range"]').forEach(input => {
+      const span = input.nextElementSibling;
+      span.contentEditable = 'true';
+      // Aplicar valor inicial
+      const prop = input.dataset.prop;
+      if (prop === '--png-wnd-top' || prop === '--png-wnd-left' || prop === '--png-scale') {
+        aplicarProp(prop, input.value);
+      }
+      // Slider → valor
+      input.addEventListener('input', function() {
+        const val = this.value;
+        span.textContent = val;
+        aplicarProp(this.dataset.prop, val);
+      });
+      // Editar valor manualmente
+      span.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.blur();
+        }
+      });
+      span.addEventListener('blur', function() {
+        let val = parseInt(this.textContent, 10);
+        if (isNaN(val)) { val = parseInt(input.value, 10); this.textContent = val; }
+        val = Math.max(parseInt(input.min, 10), Math.min(parseInt(input.max, 10), val));
+        this.textContent = val;
+        input.value = val;
+        aplicarProp(input.dataset.prop, val);
+      });
+    });
+    function aplicarProp(prop, val) {
+      if (prop === '--png-wnd-top') {
+        document.getElementById('wnd-png').style.top = val + 'px';
+      } else if (prop === '--png-wnd-left') {
+        document.getElementById('wnd-png').style.left = val + 'px';
+      } else if (prop === '--png-scale') {
+        document.getElementById('wnd-png').style.transform = 'scale(' + (val / 100) + ')';
+      } else if (prop.endsWith('-scale')) {
+        document.documentElement.style.setProperty(prop, val / 100);
+      } else {
+        document.documentElement.style.setProperty(prop, val + 'px');
+      }
+    }
+  </script>

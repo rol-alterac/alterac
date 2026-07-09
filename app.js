@@ -1352,7 +1352,6 @@ let marcaAbierta = null;
 window.abrirPanel = function(marca) {
   marcaAbierta = marca;
   marcarComoLeido(marca.id);
-  const contenido = document.getElementById('panel-contenido');
 
   // Soporte legacy: si la descripción es texto plano (sin etiquetas HTML), convertir saltos
   const desc = marca.descripcion || '';
@@ -1365,48 +1364,61 @@ window.abrirPanel = function(marca) {
 
   const btnsAccion = usuarioActual
     ? `<div class="btns-accion">
-        <button class="btn-editar" onclick="abrirModalEdicion()">✏️ Editar</button>
-        <button class="btn-mover"  onclick="activarModoMover()">📍 Cambiar Posición</button>
-        <button class="btn-tamaño" onclick="abrirModalTamaño()">🔍 Tamaño</button>
-        <button class="btn-borrar" onclick="borrarMarca('${marca.id}')">🗑️ Borrar</button>
+        <button class="btn-editar" onclick="abrirModalEdicion()">Editar</button>
+        <button class="btn-tamaño" onclick="abrirModalTamaño()">Tamaño</button>
+        <button class="btn-mover"  onclick="activarModoMover()">Mover</button>
+        <button class="btn-borrar" onclick="borrarMarca('${marca.id}')">Borrar</button>
       </div>`
     : '';
 
   const subcatsHTML = renderSubcatsEnPanel(marca.subcategorias || []);
 
-  contenido.innerHTML = `
+  // --- Poblar ventanas independientes ---
+  document.getElementById('wnd-titulo-body').innerHTML = `
     <h2>${marca.nombre}</h2>
     ${marca.categoria ? `<p class="categoria"><strong>Categoría:</strong> ${marca.categoria}</p>` : ''}
+  `;
+
+  document.getElementById('wnd-texto-body').innerHTML = `
     <div class="descripcion">${descHTML || '<em>Sin descripción</em>'}</div>
-    ${fotosHTML}
     ${subcatsHTML}
-	${marca.autor ? `<p class="autor">✍️ ${marca.autor.split(' ')[0]}</p>` : ''}
+  `;
+
+  document.getElementById('wnd-imagen-body').innerHTML = fotosHTML;
+
+  document.getElementById('wnd-botones-body').innerHTML = `
+    ${marca.autor ? `<p class="autor">✍️ ${marca.autor.split(' ')[0]}</p>` : ''}
     ${btnsAccion}
   `;
 
-  // Iconos de subcategorías en el encabezado del panel (a la izquierda de la X)
-  const iconsEl = document.getElementById('panel-subcat-icons');
-  iconsEl.innerHTML = '';
-  const subcats = marca.subcategorias || [];
-  if (subcats.length > 0) {
-    const uniqueCats = [...new Set(subcats.map(s => s.categoria).filter(Boolean))].slice(0, 4);
-    uniqueCats.forEach(cat => {
-      const img = document.createElement('img');
-      img.src = `Iconos/${encodeURIComponent(cat)}.png`;
-      img.className = 'panel-subcat-icon';
-      img.title = cat;
-      img.onerror = () => { img.style.display = 'none'; };
-      iconsEl.appendChild(img);
-    });
-  }
-
-  document.getElementById('panel').classList.remove('oculto');
+  // Mostrar todas las ventanas
+  document.querySelectorAll('.ventana-panel').forEach(w => w.classList.remove('oculto'));
+  document.getElementById('wnd-cerrar').classList.remove('oculto');
 };
 
 window.cerrarPanel = function() {
-  document.getElementById('panel').classList.add('oculto');
-  document.getElementById('panel-subcat-icons').innerHTML = '';
+  document.querySelectorAll('.ventana-panel').forEach(w => w.classList.add('oculto'));
+  document.getElementById('wnd-cerrar').classList.add('oculto');
   marcaAbierta = null;
+};
+
+// ── ARRASTRE DE VENTANAS ──
+window.iniciarArrastre = function(wnd, e) {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  const rect = wnd.getBoundingClientRect();
+  const dx = e.clientX - rect.left;
+  const dy = e.clientY - rect.top;
+  const onMove = (ev) => {
+    wnd.style.left = (ev.clientX - dx) + 'px';
+    wnd.style.top  = (ev.clientY - dy) + 'px';
+  };
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
 };
 
 // ══════════════════════════════
@@ -1422,7 +1434,8 @@ window.activarModoMover = function() {
   modoMover = true;
 
   // Cerrar panel y mostrar instrucción
-  document.getElementById('panel').classList.add('oculto');
+  document.querySelectorAll('.ventana-panel').forEach(w => w.classList.add('oculto'));
+  document.getElementById('wnd-cerrar').classList.add('oculto');
 
   const instrEl = document.getElementById('instruccion');
   instrEl.innerHTML = `Haz clic en el mapa para mover <strong>${marcaParaMover.nombre}</strong> <button onclick="cancelarModoMover()">Cancelar</button>`;
@@ -1491,7 +1504,7 @@ window.abrirModalEdicion = function() {
     desc.startsWith('<') ? desc : desc.replace(/\n/g, '<br>');
   reinjectImgControls(document.getElementById('edit-descripcion-editor'));
 
-  document.getElementById('edit-fotos-nuevas').value = '';
+  document.getElementById('edit-foto-input').value = '';
   document.getElementById('edit-preview-nuevas').innerHTML = '';
   document.getElementById('edit-progreso-caja').classList.add('oculto');
   document.getElementById('edit-progreso-barra').style.width = '0%';
@@ -1511,21 +1524,38 @@ window.abrirModalEdicion = function() {
 function renderizarFotosExistentes() {
   const container = document.getElementById('edit-fotos-existentes');
   if (fotosExistentes.length === 0) {
-    container.innerHTML = '<p style="color:#555;font-size:0.82rem;margin-top:4px;">Sin fotos</p>';
+    container.innerHTML = '<p style="color:#555;font-size:0.82rem;margin-top:4px;">Sin foto</p>';
     return;
   }
-  container.innerHTML = fotosExistentes.map((url, i) => `
+  container.innerHTML = fotosExistentes.map(url => `
     <div class="foto-existente">
       <img src="${url}" />
-      <button class="btn-quitar-foto" onclick="quitarFotoExistente(${i})">✕</button>
     </div>
   `).join('');
 }
 
-window.quitarFotoExistente = function(indice) {
-  fotosExistentes.splice(indice, 1);
-  renderizarFotosExistentes();
+window.reemplazarFoto = function() {
+  document.getElementById('edit-foto-input').click();
 };
+document.getElementById('edit-foto-input').addEventListener('change', async function() {
+  if (!this.files || this.files.length === 0) return;
+  fotosExistentes = [];
+  const file = this.files[0];
+  const preview = document.getElementById('edit-preview-nuevas');
+  preview.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = URL.createObjectURL(file);
+  preview.appendChild(img);
+  const url = await subirFotoCloudinaryElem(file,
+    document.getElementById('edit-progreso-barra'),
+    document.getElementById('edit-progreso-texto'));
+  if (url) {
+    fotosExistentes = [url];
+    renderizarFotosExistentes();
+    preview.innerHTML = '';
+    document.getElementById('edit-progreso-caja').classList.add('oculto');
+  }
+});
 
 window.cerrarModalEdicion = function() {
   document.getElementById('modal-edicion').classList.add('oculto');
@@ -1533,21 +1563,11 @@ window.cerrarModalEdicion = function() {
   document.getElementById('edit-subcats-wrap').innerHTML = '';
 };
 
-document.getElementById('edit-fotos-nuevas').addEventListener('change', function() {
-  const preview = document.getElementById('edit-preview-nuevas');
-  preview.innerHTML = '';
-  Array.from(this.files).forEach(file => {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    preview.appendChild(img);
-  });
-});
 
 window.guardarEdicion = async function() {
   const nombre         = document.getElementById('edit-nombre').value.trim();
   const categoria      = document.getElementById('edit-categoria').value;
   const descripcion    = limpiarEditorHTML(document.getElementById('edit-descripcion-editor').innerHTML.trim());
-  const archivosNuevos = document.getElementById('edit-fotos-nuevas').files;
   const btnGuardar     = document.getElementById('btn-guardar-edicion');
 
   if (!nombre)        { alert('Escribe un nombre para el lugar.'); return; }
@@ -1557,20 +1577,7 @@ window.guardarEdicion = async function() {
   btnGuardar.textContent = 'Guardando...';
 
   try {
-    const urlsFotosNuevas = [];
-    if (archivosNuevos.length > 0) {
-      document.getElementById('edit-progreso-caja').classList.remove('oculto');
-      for (let i = 0; i < archivosNuevos.length; i++) {
-        urlsFotosNuevas.push(await subirFotoCloudinary(
-          archivosNuevos[i], i, archivosNuevos.length,
-          'edit-progreso-barra', 'edit-progreso-texto'
-        ));
-      }
-      document.getElementById('edit-progreso-barra').style.width = '100%';
-      document.getElementById('edit-progreso-texto').textContent = 'Fotos subidas ✓';
-    }
-
-    const todasLasFotos = [...fotosExistentes, ...urlsFotosNuevas];
+    const todasLasFotos = fotosExistentes;
     const subcategorias = await recogerSubcats('edit-subcats-wrap');
 
     await updateDoc(doc(db, 'pins', marcaAbierta.id), { nombre, categoria, descripcion, fotos: todasLasFotos, subcategorias, updatedAt: new Date().toISOString() });
@@ -1594,39 +1601,6 @@ window.guardarEdicion = async function() {
     btnGuardar.textContent = '💾 Guardar cambios';
   }
 };
-
-// ══════════════════════════════
-//  RESIZE DEL PANEL
-// ══════════════════════════════
-
-(function iniciarResize() {
-  const panel  = document.getElementById('panel');
-  const handle = document.getElementById('panel-resize-handle');
-  let arrastrando = false;
-
-  handle.addEventListener('mousedown', (e) => {
-    arrastrando = true;
-    document.body.style.cursor = 'ew-resize';
-    document.body.style.userSelect = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!arrastrando) return;
-    const rect     = panel.getBoundingClientRect();
-    const newWidth = e.clientX - rect.left;
-    if (newWidth >= 260 && newWidth <= 860) {
-      panel.style.width = newWidth + 'px';
-    }
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (!arrastrando) return;
-    arrastrando = false;
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  });
-})();
 
 // ══════════════════════════════
 //  MODAL TAMAÑO DE ICONO
