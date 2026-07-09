@@ -124,50 +124,19 @@ const grupoNombres = L.layerGroup().addTo(mapa);
 const estadoCapas  = { marcas: true, nombres: true };
 
 // — Filtro por categoría —
-const CATEGORIAS = [
-  'La Astralis',
-  'Armada',
-  'Batalla Naval',
-  'Capital',
-  'Contaminación',
-  'Estación Espacial 1',
-  'Estación Espacial 2',
-  'Estructura Espacial',
-  'Fauna Espacial dócil',
-  'Fauna Espacial hostil',
-  'Fauna Espacial',
-  'Flota Civil',
-  'Grieta Astral',
-  'Hábitat Orbital',
-  'Monstruo Espacial',
-  'Nave Civil',
-  'Peligro',
-  'Planeta Bajo Asedio',
-  'Planeta Científico',
-  'Planeta Colonizado',
-  'Planeta Comercial',
-  'Planeta Disponible',
-  'Planeta Espiritual',
-  'Planeta Industrial',
-  'Planeta Minero',
-  'Planeta Natural',
-  'Planeta Ocio',
-  'Planeta Ocupado',
-  'Planeta Prisión',
-  'Planeta Robot',
-  'Planeta Urbano',
-  'Radiación',
-  'Sistema Agujero Negro',
-  'Sistema Binario',
-  'Sistema Genérico',
-  'Sistema Ocupado',
-  'Sistema Primario',
-  'Sistema Púlsar',
-  'Sistema Trinario',
-  'Sonda',
-  'Símbolo Genérico 1',
-];
+const response = await fetch('./categorias.json');
+const CATEGORIAS = await response.json();
 const categoriasVisibles = new Set(CATEGORIAS);
+
+// Populate static edit-categoria select
+const editSel = document.getElementById('edit-categoria');
+if (editSel) {
+  CATEGORIAS.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    editSel.appendChild(o);
+  });
+}
 
 function debeEstarVisible(datos) {
   const regionOk = !datos.region || datos.region === regionActiva;
@@ -1227,32 +1196,91 @@ window.tablaDelColumna = function(btn) {
 // ══════════════════════════════
 
 window.abrirModal = function() {
-  document.getElementById('modal').classList.remove('oculto');
-  document.getElementById('input-nombre').value = '';
-  document.getElementById('input-categoria').value = 'Sistema';
-  document.getElementById('input-descripcion-editor').innerHTML = '';
-  document.getElementById('input-fotos').value = '';
-  document.getElementById('preview-fotos').innerHTML = '';
-  document.getElementById('progreso-caja').classList.add('oculto');
-  document.getElementById('progreso-barra').style.width = '0%';
-  document.getElementById('nuevas-subcats-wrap').innerHTML = '';
+  // Título + Categoría
+  const titBody = document.getElementById('wnd-titulo-body');
+  titBody.innerHTML = '';
+
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.id = 'input-nombre'; inp.className = 'crear-input';
+  inp.placeholder = 'Título...';
+  titBody.appendChild(inp);
+
+  const sel = document.createElement('select');
+  sel.id = 'input-categoria'; sel.className = 'crear-select';
+  sel.style.marginTop = '6px';
+  CATEGORIAS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  titBody.appendChild(sel);
+  sel.value = 'Sistema Genérico';
+
+  // Editor de descripción
+  document.getElementById('wnd-texto-body').innerHTML = `
+    <div class="toolbar-caja"><div class="editor-toolbar">
+      <button type="button" onclick="formatText('bold')"      title="Negrita"><b>N</b></button>
+      <button type="button" onclick="formatText('italic')"    title="Cursiva"><i>C</i></button>
+      <button type="button" onclick="formatText('underline')" title="Subrayado"><u>S</u></button>
+      <div class="toolbar-sep"></div>
+      <select onchange="formatSize(this)" title="Tamaño de texto">
+        <option value="3">Normal</option>
+        <option value="1">Pequeño</option>
+        <option value="5">Grande</option>
+        <option value="7">Muy grande</option>
+      </select>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="insertarImagenEditor()" title="Insertar imagen en el texto">🖼️</button>
+      <div class="toolbar-sep"></div>
+      <button type="button" class="btn-color-texto" onclick="abrirColorTexto(this)" title="Color de texto"><span class="color-preview-texto"></span></button>
+      <button type="button" class="btn-color-fondo" onclick="abrirColorFondo(this)" title="Resaltar texto"><span class="color-preview-fondo"></span></button>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="abrirMenuCodigo(this)" title="Código inline o bloque"><span class="ico-code">&lt;/&gt;</span></button>
+      <div class="toolbar-sep"></div>
+      <button type="button" onclick="abrirModalTabla()" title="Insertar tabla">⊞</button>
+    </div></div>
+    <div id="input-descripcion-editor" class="editor-content" contenteditable="true"
+         data-placeholder="Escribe lo que quieras..."></div>
+    <div id="nuevas-subcats-wrap" style="margin-top:8px"></div>
+    <button type="button" class="btn-añadir-subcat" onclick="añadirSubcatForm('nuevo')" style="margin-bottom:8px">Añadir Subcategoría</button>
+  `;
+
+  // Foto
+  document.getElementById('wnd-imagen-body').innerHTML = `
+    <label class="crear-label">Foto Principal:</label>
+    <input type="file" id="input-fotos" accept="image/*" />
+    <div id="preview-fotos"></div>
+    <div id="progreso-caja" class="oculto">
+      <div id="progreso-barra"></div>
+      <span id="progreso-texto">Subiendo fotos...</span>
+    </div>
+  `;
+  document.getElementById('input-fotos').addEventListener('change', function() {
+    const preview = document.getElementById('preview-fotos');
+    preview.innerHTML = '';
+    Array.from(this.files).forEach(file => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      preview.appendChild(img);
+    });
+  });
+
+  // Botones + subcategorías
+  document.getElementById('wnd-botones-body').innerHTML = `
+    <div class="crear-btns">
+      <button id="btn-guardar" class="crear-btn" onclick="guardarPin()">Guardar marca</button>
+      <button class="crear-btn" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  `;
+
+  // Aplicar posiciones de creación
+  if (window.aplicarCrearPos) window.aplicarCrearPos();
+
+  // Mostrar ventanas
+  document.querySelectorAll('.ventana-panel').forEach(w => w.classList.remove('oculto'));
+  document.getElementById('wnd-cerrar').classList.remove('oculto');
 };
 
 window.cerrarModal = function() {
-  document.getElementById('modal').classList.add('oculto');
-  coordsNuevoPin = null;
-  document.getElementById('nuevas-subcats-wrap').innerHTML = '';
+  cerrarPanel();
 };
 
-document.getElementById('input-fotos').addEventListener('change', function() {
-  const preview = document.getElementById('preview-fotos');
-  preview.innerHTML = '';
-  Array.from(this.files).forEach(file => {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    preview.appendChild(img);
-  });
-});
 
 // ══════════════════════════════
 //  SUBIR FOTO A CLOUDINARY
@@ -1321,7 +1349,7 @@ window.guardarPin = async function() {
       : 'Error al guardar. Abre la consola (F12) para ver el detalle.');
   } finally {
     btnGuardar.disabled = false;
-    btnGuardar.textContent = '💾 Guardar marca';
+    btnGuardar.textContent = 'Guardar marca';
   }
 };
 
@@ -1400,6 +1428,11 @@ window.cerrarPanel = function() {
   document.querySelectorAll('.ventana-panel').forEach(w => w.classList.add('oculto'));
   document.getElementById('wnd-cerrar').classList.add('oculto');
   marcaAbierta = null;
+  coordsNuevoPin = null;
+  const wrap = document.getElementById('nuevas-subcats-wrap');
+  if (wrap) wrap.innerHTML = '';
+  // Limpiar posiciones de creación
+  if (window.limpiarCrearPos) window.limpiarCrearPos();
 };
 
 // ── ARRASTRE DE VENTANAS ──
@@ -1709,7 +1742,7 @@ function crearFormSubcat(prefijo, datos) {
   wrap.innerHTML = `
     <div class="subcat-form-cabecera">
       <span class="subcat-form-label">▸ Subcategoría</span>
-      <button type="button" class="btn-borrar-subcat-form" onclick="this.closest('.subcat-form').remove()">🗑️ Borrar subcategoría</button>
+      <button type="button" class="btn-borrar-subcat-form" onclick="this.closest('.subcat-form').remove()">Borrar subcategoría</button>
     </div>
     <label class="subcat-lbl">Título *</label>
     <input type="text" class="subcat-input-titulo" placeholder="Título de la subcategoría..." value="${titulo.replace(/"/g,'&quot;').replace(/</g,'&lt;')}" />
@@ -1744,17 +1777,6 @@ function crearFormSubcat(prefijo, datos) {
     </div>
     <div class="editor-content subcat-editor" contenteditable="true" data-placeholder="Descripción de la subcategoría..."></div>
     ${fotosExistHTML}
-    <label class="subcat-lbl">Fotos de pie de página</label>
-    <input type="file" class="subcat-input-fotos" accept="image/*" multiple />
-    <div class="subcat-preview-fotos"></div>
-    <div class="subcat-progreso-caja oculto">
-      <div class="subcat-progreso-barra"></div>
-      <span class="subcat-progreso-texto">Subiendo...</span>
-    </div>
-    <div class="subcat-orden-btns">
-      <button type="button" class="btn-subcat-orden btn-subcat-subir" title="Subir subcategoría">▲</button>
-      <button type="button" class="btn-subcat-orden btn-subcat-bajar" title="Bajar subcategoría">▼</button>
-    </div>
   `;
 
   // Cargar descripción (con o sin HTML)
@@ -1763,17 +1785,6 @@ function crearFormSubcat(prefijo, datos) {
     editor.innerHTML = descripcion.startsWith('<') ? descripcion : descripcion.replace(/\n/g, '<br>');
     reinjectImgControls(editor);
   }
-
-  // Preview fotos nuevas
-  wrap.querySelector('.subcat-input-fotos').addEventListener('change', function() {
-    const preview = wrap.querySelector('.subcat-preview-fotos');
-    preview.innerHTML = '';
-    Array.from(this.files).forEach(file => {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      preview.appendChild(img);
-    });
-  });
 
   // Botón imagen inline en editor de subcategoría
   wrap.querySelector('.btn-img-subcat').addEventListener('click', () => {
@@ -1787,13 +1798,8 @@ function crearFormSubcat(prefijo, datos) {
     fi.addEventListener('change', async () => {
       const file = fi.files[0];
       if (!file) return;
-      const cajaEl  = wrap.querySelector('.subcat-progreso-caja');
-      const barraEl = wrap.querySelector('.subcat-progreso-barra');
-      const textoEl = wrap.querySelector('.subcat-progreso-texto');
-      cajaEl.classList.remove('oculto');
       try {
-        const url = await subirFotoCloudinaryElem(file, barraEl, textoEl);
-        textoEl.textContent = 'Imagen insertada ✓';
+        const url = await subirFotoCloudinaryElem(file);
         editorCapturado = editor;
         insertarImgEnEditor(url);
       } catch(err) {
@@ -1809,20 +1815,6 @@ function crearFormSubcat(prefijo, datos) {
   const sliderValorEl = wrap.querySelector('.subcat-tamaño-valor');
   sliderEl.addEventListener('input', () => {
     sliderValorEl.textContent = parseFloat(sliderEl.value).toFixed(1) + '×';
-  });
-
-  // Botones orden arriba/abajo
-  wrap.querySelector('.btn-subcat-subir').addEventListener('click', () => {
-    const container = wrap.parentElement;
-    const forms = [...container.querySelectorAll(':scope > .subcat-form')];
-    const i = forms.indexOf(wrap);
-    if (i > 0) container.insertBefore(wrap, forms[i - 1]);
-  });
-  wrap.querySelector('.btn-subcat-bajar').addEventListener('click', () => {
-    const container = wrap.parentElement;
-    const forms = [...container.querySelectorAll(':scope > .subcat-form')];
-    const i = forms.indexOf(wrap);
-    if (i < forms.length - 1) container.insertBefore(forms[i + 1], wrap);
   });
 
   return wrap;
@@ -1867,24 +1859,7 @@ async function recogerSubcats(containerId) {
       fotosExistentes.push(img.src);
     });
 
-    // Subir fotos nuevas
-    const fileInput = form.querySelector('.subcat-input-fotos');
-    const barraEl   = form.querySelector('.subcat-progreso-barra');
-    const textoEl   = form.querySelector('.subcat-progreso-texto');
-    const cajaEl    = form.querySelector('.subcat-progreso-caja');
-    const urlsNuevas = [];
-
-    if (fileInput.files.length > 0) {
-      cajaEl.classList.remove('oculto');
-      for (let i = 0; i < fileInput.files.length; i++) {
-        if (textoEl) textoEl.textContent = `Subiendo foto ${i+1}/${fileInput.files.length}...`;
-        if (barraEl) barraEl.style.width = Math.round((i / fileInput.files.length) * 100) + '%';
-        urlsNuevas.push(await subirFotoCloudinaryElem(fileInput.files[i], barraEl, textoEl));
-      }
-      if (textoEl) textoEl.textContent = 'Fotos subidas ✓';
-    }
-
-    resultado.push({ titulo, categoria, iconoEscala: parseFloat(form.querySelector('.subcat-tamaño-slider').value) || 1, descripcion, fotos: [...fotosExistentes, ...urlsNuevas] });
+    resultado.push({ titulo, categoria, iconoEscala: parseFloat(form.querySelector('.subcat-tamaño-slider').value) || 1, descripcion, fotos: fotosExistentes });
   }
 
   return resultado;

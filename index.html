@@ -66,102 +66,6 @@
     <button onclick="cancelarModoPin()">Cancelar</button>
   </div>
 
-  <!-- Modal nueva marca -->
-  <div id="modal" class="oculto">
-    <div id="modal-caja">
-      <h2>📌 Nueva marca</h2>
-
-      <label>Título *</label>
-      <input type="text" id="input-nombre" placeholder="Escribe lo que quieras..." />
-
-      <label>Categoría *</label>
-      <select id="input-categoria">
-	    <option value="La Astralis">La Astralis</option>
-        <option value="Armada">Armada</option>
-        <option value="Batalla Naval">Batalla Naval</option>
-        <option value="Capital">Capital</option>
-        <option value="Contaminación">Contaminación</option>
-        <option value="Estación Espacial 1">Estación Espacial 1</option>
-        <option value="Estación Espacial 2">Estación Espacial 2</option>
-        <option value="Estructura Espacial">Estructura Espacial</option>
-        <option value="Fauna Espacial dócil">Fauna Espacial dócil</option>
-        <option value="Fauna Espacial hostil">Fauna Espacial hostil</option>
-        <option value="Fauna Espacial">Fauna Espacial</option>
-        <option value="Flota Civil">Flota Civil</option>
-        <option value="Grieta Astral">Grieta Astral</option>
-        <option value="Hábitat Orbital">Hábitat Orbital</option>
-        <option value="Monstruo Espacial">Monstruo Espacial</option>
-        <option value="Nave Civil">Nave Civil</option>
-        <option value="Peligro">Peligro</option>
-        <option value="Planeta Bajo Asedio">Planeta Bajo Asedio</option>
-        <option value="Planeta Científico">Planeta Científico</option>
-        <option value="Planeta Colonizado">Planeta Colonizado</option>
-        <option value="Planeta Comercial">Planeta Comercial</option>
-        <option value="Planeta Disponible">Planeta Disponible</option>
-        <option value="Planeta Espiritual">Planeta Espiritual</option>
-        <option value="Planeta Industrial">Planeta Industrial</option>
-        <option value="Planeta Minero">Planeta Minero</option>
-        <option value="Planeta Natural">Planeta Natural</option>
-        <option value="Planeta Ocio">Planeta Ocio</option>
-        <option value="Planeta Ocupado">Planeta Ocupado</option>
-        <option value="Planeta Prisión">Planeta Prisión</option>
-        <option value="Planeta Robot">Planeta Robot</option>
-        <option value="Planeta Urbano">Planeta Urbano</option>
-        <option value="Radiación">Radiación</option>
-        <option value="Sistema Agujero Negro">Sistema Agujero Negro</option>
-        <option value="Sistema Binario">Sistema Binario</option>
-        <option value="Sistema Genérico">Sistema Genérico</option>
-        <option value="Sistema Ocupado">Sistema Ocupado</option>
-        <option value="Sistema Primario">Sistema Primario</option>
-        <option value="Sistema Púlsar">Sistema Púlsar</option>
-        <option value="Sistema Trinario">Sistema Trinario</option>
-        <option value="Sonda">Sonda</option>
-        <option value="Símbolo Genérico 1">Símbolo Genérico 1</option>
-      </select>
-
-      <label>Descripción</label>
-      <div class="editor-toolbar">
-        <button type="button" onclick="formatText('bold')"      title="Negrita"><b>N</b></button>
-        <button type="button" onclick="formatText('italic')"    title="Cursiva"><i>C</i></button>
-        <button type="button" onclick="formatText('underline')" title="Subrayado"><u>S</u></button>
-        <div class="toolbar-sep"></div>
-        <select onchange="formatSize(this)" title="Tamaño de texto">
-          <option value="3">Normal</option>
-          <option value="1">Pequeño</option>
-          <option value="5">Grande</option>
-          <option value="7">Muy grande</option>
-        </select>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="insertarImagenEditor()" title="Insertar imagen en el texto">🖼️</button>
-        <div class="toolbar-sep"></div>
-        <button type="button" class="btn-color-texto" onclick="abrirColorTexto(this)" title="Color de texto"><span class="color-preview-texto"></span></button>
-        <button type="button" class="btn-color-fondo" onclick="abrirColorFondo(this)" title="Resaltar texto"><span class="color-preview-fondo"></span></button>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="abrirMenuCodigo(this)" title="Código inline o bloque"><span class="ico-code">&lt;/&gt;</span></button>
-        <div class="toolbar-sep"></div>
-        <button type="button" onclick="abrirModalTabla()" title="Insertar tabla">⊞</button>
-      </div>
-      <div id="input-descripcion-editor" class="editor-content" contenteditable="true"
-           data-placeholder="Escribe lo que quieras..."></div>
-
-      <label>Foto Principal:</label>
-      <input type="file" id="input-fotos" accept="image/*" />
-      <div id="preview-fotos"></div>
-
-      <div id="progreso-caja" class="oculto">
-        <div id="progreso-barra"></div>
-        <span id="progreso-texto">Subiendo fotos...</span>
-      </div>
-
-      <!-- Subcategorías nueva marca -->
-      <div id="nuevas-subcats-wrap"></div>
-      <button type="button" class="btn-añadir-subcat" onclick="añadirSubcatForm('nuevo')">➕ Añadir Subcategoría</button>
-
-      <button id="btn-guardar" onclick="guardarPin()">💾 Guardar marca</button>
-      <button class="btn-secundario" onclick="cerrarModal()">Cancelar</button>
-    </div>
-  </div>
-
   <!-- Modal edición marca -->
   <div id="modal-edicion" class="oculto">
     <div id="modal-edicion-caja">
@@ -171,49 +75,7 @@
       <input type="text" id="edit-nombre" placeholder="Escribe lo que quieras..." />
 
       <label>Categoría *</label>
-      <select id="edit-categoria">
-        <option value="La Astralis">La Astralis</option>
-        <option value="Armada">Armada</option>
-        <option value="Batalla Naval">Batalla Naval</option>
-        <option value="Capital">Capital</option>
-        <option value="Contaminación">Contaminación</option>
-        <option value="Estación Espacial 1">Estación Espacial 1</option>
-        <option value="Estación Espacial 2">Estación Espacial 2</option>
-        <option value="Estructura Espacial">Estructura Espacial</option>
-        <option value="Fauna Espacial dócil">Fauna Espacial dócil</option>
-        <option value="Fauna Espacial hostil">Fauna Espacial hostil</option>
-        <option value="Fauna Espacial">Fauna Espacial</option>
-        <option value="Flota Civil">Flota Civil</option>
-        <option value="Grieta Astral">Grieta Astral</option>
-        <option value="Hábitat Orbital">Hábitat Orbital</option>
-        <option value="Monstruo Espacial">Monstruo Espacial</option>
-        <option value="Nave Civil">Nave Civil</option>
-        <option value="Peligro">Peligro</option>
-        <option value="Planeta Bajo Asedio">Planeta Bajo Asedio</option>
-        <option value="Planeta Científico">Planeta Científico</option>
-        <option value="Planeta Colonizado">Planeta Colonizado</option>
-        <option value="Planeta Comercial">Planeta Comercial</option>
-        <option value="Planeta Disponible">Planeta Disponible</option>
-        <option value="Planeta Espiritual">Planeta Espiritual</option>
-        <option value="Planeta Industrial">Planeta Industrial</option>
-        <option value="Planeta Minero">Planeta Minero</option>
-        <option value="Planeta Natural">Planeta Natural</option>
-        <option value="Planeta Ocio">Planeta Ocio</option>
-        <option value="Planeta Ocupado">Planeta Ocupado</option>
-        <option value="Planeta Prisión">Planeta Prisión</option>
-        <option value="Planeta Robot">Planeta Robot</option>
-        <option value="Planeta Urbano">Planeta Urbano</option>
-        <option value="Radiación">Radiación</option>
-        <option value="Sistema Agujero Negro">Sistema Agujero Negro</option>
-        <option value="Sistema Binario">Sistema Binario</option>
-        <option value="Sistema Genérico">Sistema Genérico</option>
-        <option value="Sistema Ocupado">Sistema Ocupado</option>
-        <option value="Sistema Primario">Sistema Primario</option>
-        <option value="Sistema Púlsar">Sistema Púlsar</option>
-        <option value="Sistema Trinario">Sistema Trinario</option>
-        <option value="Sonda">Sonda</option>
-        <option value="Símbolo Genérico 1">Símbolo Genérico 1</option>
-      </select>
+      <select id="edit-categoria"></select>
 
       <label>Descripción</label>
       <div class="editor-toolbar">
@@ -325,7 +187,75 @@
       </div>
     </div>
   </div>
-  
-  
+
+  <!-- Panel de ajustes temporales -->
   <script type="module" src="app.js"></script>
   <script type="module" src="dibujo.js"></script>
+
+  <script>
+    // Create-mode position defaults
+    window.crearPos = {
+      png: { top: -295, left: 434, scale: 175 },
+      tit: { top: 85, left: 480, scale: 121, 'inp-h': 32, 'inp-w': 578, 'sel-w': 372 },
+      txt: { top: 185, left: 478, w: 616, h: 540 },
+      img: { top: 356, left: 1113, scale: 97 },
+      btns: { top: 641, left: 1122, gap: 9, btnW: 144, btnH: 41, scale: 100 },
+      cerrar: { top: 713, left: 1414, scale: 125 },
+    };
+    window.aplicarCrearPos = function() {
+      const p = window.crearPos;
+      const s = p.png.scale / 100;
+      document.getElementById('wnd-png').style.top = p.png.top + 'px';
+      document.getElementById('wnd-png').style.left = p.png.left + 'px';
+      document.getElementById('wnd-png').style.width = Math.round(600 * s) + 'px';
+      document.getElementById('wnd-png').style.height = Math.round(800 * s) + 'px';
+      document.getElementById('wnd-png').style.transform = 'none';
+      document.getElementById('wnd-titulo').style.top = p.tit.top + 'px';
+      document.getElementById('wnd-titulo').style.left = p.tit.left + 'px';
+      document.getElementById('wnd-titulo').style.width = Math.round(526 * p.tit.scale / 100) + 'px';
+      document.getElementById('wnd-titulo-body').style.transform = 'none';
+      document.documentElement.style.setProperty('--crear-inp-h', p.tit['inp-h'] + 'px');
+      document.documentElement.style.setProperty('--crear-inp-w', p.tit['inp-w'] + 'px');
+      document.documentElement.style.setProperty('--crear-sel-w', p.tit['sel-w'] + 'px');
+      document.getElementById('wnd-texto').style.top = p.txt.top + 'px';
+      document.getElementById('wnd-texto').style.left = p.txt.left + 'px';
+      document.getElementById('wnd-texto').style.width = p.txt.w + 'px';
+      document.getElementById('wnd-texto').style.height = p.txt.h + 'px';
+      document.getElementById('wnd-imagen').style.top = p.img.top + 'px';
+      document.getElementById('wnd-imagen').style.left = p.img.left + 'px';
+      document.getElementById('wnd-imagen-body').style.transform = 'none';
+      document.getElementById('wnd-botones').style.top = p.btns.top + 'px';
+      document.getElementById('wnd-botones').style.left = p.btns.left + 'px';
+      document.documentElement.style.setProperty('--btns-gap', p.btns.gap + 'px');
+      document.documentElement.style.setProperty('--btn-w', p.btns.btnW + 'px');
+      document.documentElement.style.setProperty('--btn-h', p.btns.btnH + 'px');
+      document.documentElement.style.setProperty('--btn-scale', p.btns.scale / 100);
+      document.getElementById('wnd-cerrar').style.top = p.cerrar.top + 'px';
+      document.getElementById('wnd-cerrar').style.left = p.cerrar.left + 'px';
+      document.getElementById('wnd-cerrar').style.transform = 'scale(' + (p.cerrar.scale / 100) + ')';
+    };
+    window.limpiarCrearPos = function() {
+      ['wnd-png', 'wnd-titulo', 'wnd-texto', 'wnd-imagen', 'wnd-botones', 'wnd-cerrar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.top = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.height = '';
+        el.style.transform = '';
+      });
+      ['wnd-titulo-body', 'wnd-texto-body', 'wnd-imagen-body', 'wnd-botones-body'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.transform = '';
+        el.style.zoom = '';
+      });
+      document.documentElement.style.removeProperty('--btns-gap');
+      document.documentElement.style.removeProperty('--btn-w');
+      document.documentElement.style.removeProperty('--btn-h');
+      document.documentElement.style.removeProperty('--btn-scale');
+      document.documentElement.style.removeProperty('--crear-inp-h');
+      document.documentElement.style.removeProperty('--crear-inp-w');
+      document.documentElement.style.removeProperty('--crear-sel-w');
+    };
+  </script>
