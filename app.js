@@ -1315,7 +1315,6 @@ window.tablaDelColumna = function(btn) {
 window.abrirModal = function() {
   const tipo = tipoCreacion || 'marca';
   const cats = tipo === 'evento' ? CATEGORIAS_EVENTOS : CATEGORIAS;
-  const etiquetaTipo = tipo === 'evento' ? 'evento' : 'marca';
 
   // Título + Categoría
   const titBody = document.getElementById('wnd-titulo-body');
@@ -1407,10 +1406,9 @@ window.abrirModal = function() {
   });
 
   // Botones + subcategorías
-  const btnTexto = etiquetaTipo === 'evento' ? 'Guardar evento' : 'Guardar marca';
   document.getElementById('wnd-botones-body').innerHTML = `
     <div class="crear-btns">
-      <button id="btn-guardar" class="crear-btn" onclick="guardarPin()">${btnTexto}</button>
+      <button id="btn-guardar" class="crear-btn" onclick="guardarPin()">Guardar cambios</button>
       <button class="crear-btn" onclick="cerrarModal()">Cancelar</button>
     </div>
   `;
@@ -1497,7 +1495,7 @@ window.guardarPin = async function() {
       : 'Error al guardar. Abre la consola (F12) para ver el detalle.');
   } finally {
     btnGuardar.disabled = false;
-    btnGuardar.textContent = 'Guardar marca';
+    btnGuardar.textContent = 'Guardar cambios';
   }
 };
 
@@ -1788,10 +1786,9 @@ window.abrirModalEdicion = function() {
   });
 
   // Botones
-  const btnTexto = tipo === 'evento' ? 'Guardar cambios (evento)' : 'Guardar cambios';
   document.getElementById('wnd-botones-body').innerHTML = `
     <div class="crear-btns">
-      <button id="btn-guardar" class="crear-btn" onclick="guardarEdicion()">${btnTexto}</button>
+      <button id="btn-guardar" class="crear-btn" onclick="guardarEdicion()">Guardar cambios</button>
       <button class="crear-btn" onclick="cerrarModalEdicion()">Cancelar</button>
     </div>
   `;
