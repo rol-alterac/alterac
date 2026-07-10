@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casas</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+      background: url('../ui/fondo.jpeg') center / cover no-repeat;
+      color: #eee;
+    }
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: 17px;
+      background-image: url('../ui/divisor.avif');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      z-index: 10001;
+      pointer-events: none;
+    }
+    body::before { top: 0; }
+    body::after  { bottom: 0; }
+
+    .centro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .btn-volver {
+      background-image: url('../ui/botongris.png');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      border: none;
+      font-family: 'Friz Quadrata', 'Segoe UI', Tahoma, sans-serif;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 14px 40px;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .btn-volver:hover {
+      filter: brightness(1.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="centro">
+    <button class="btn-volver" onclick="window.location.href='../index.html'">Volver</button>
+  </div>
+</body>
+</html>
