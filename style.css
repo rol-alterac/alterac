@@ -92,6 +92,7 @@ body::after  { bottom: 0; }
   height: 100vh;
   background: transparent;
   position: relative;
+  z-index: 1;
 }
 
 
@@ -99,22 +100,17 @@ body::after  { bottom: 0; }
 /* ── BARRA DE SESIÓN ── */
 #barra-sesion {
   position: fixed;
-  bottom: 26px; right: 12px;
+  bottom: 27px; right: 3px;
   z-index: 1000;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(22, 33, 62, 0.92);
-  border: 1px solid #0f3460;
-  border-radius: 22px;
-  padding: 7px 16px;
-  backdrop-filter: blur(6px);
 }
 
-#info-usuario { font-size: 0.82rem; color: #aaa; }
+#info-usuario { font-size: 0.82rem; color: #aaa; margin-left: -25px; }
 
 #btn-login {
-  background: #4285F4;
+  background: transparent;
   color: white;
   border: none;
   padding: 7px 15px;
@@ -122,8 +118,9 @@ body::after  { bottom: 0; }
   font-size: 0.82rem;
   cursor: pointer;
   font-weight: bold;
+  position: relative; left: -22px; top: 2px;
 }
-#btn-login:hover { background: #3367d6; }
+#btn-login:hover { background: transparent; color: #f59e0b; }
 
 #btn-logout {
   background: transparent;
@@ -133,8 +130,9 @@ body::after  { bottom: 0; }
   border-radius: 14px;
   font-size: 0.78rem;
   cursor: pointer;
+  margin-left: 55px;
 }
-#btn-logout:hover { border-color: #e94560; color: #e94560; }
+#btn-logout:hover { border-color: #f59e0b; color: #f59e0b; }
 
 /* ── PANEL LATERAL ── */
 /* ── VENTANAS INDEPENDIENTES DEL PANEL ── */
@@ -342,16 +340,15 @@ body::after  { bottom: 0; }
 /* ── BOTÓN AÑADIR PIN ── */
 #btn-añadir {
   position: fixed;
-  bottom: 78px; right: 12px;
-  background: #e94560;
-  color: #fff; border: none;
-  padding: 13px 28px; border-radius: 30px;
-  font-size: 0.95rem; font-weight: bold;
+  bottom: 95px; right: 16px;
+  background: url('ui/botonplus.png') center / contain no-repeat;
+  border: none;
+  width: 60px; height: 60px;
   cursor: pointer; z-index: 1000;
-  box-shadow: 0 4px 18px rgba(233,69,96,0.45);
+  transform: scale(1.5);
   transition: all 0.2s;
 }
-#btn-añadir:hover { background: #c73652; transform: scale(1.05); }
+#btn-añadir:hover { background-image: url('ui/botonplusiluminado.png'); }
 
 /* ── HERRAMIENTAS DE DIBUJO ── */
 #herramientas-dibujo {

@@ -546,7 +546,7 @@ function actualizarUI(usuario) {
     btnAñadir.classList.remove('oculto');
     btnAñadirEv.classList.remove('oculto');
   } else {
-    infoEl.textContent = '👁️ Solo lectura';
+    infoEl.textContent = '';
     btnLogin.classList.remove('oculto');
     btnLogout.classList.add('oculto');
     btnAñadir.classList.add('oculto');
