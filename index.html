@@ -57,12 +57,13 @@
     <button id="btn-estilo" class="herramienta-btn" onclick="seleccionarHerramienta('estilo')">Estilo</button>
   </div>
 
-  <!-- Botón añadir marca -->
-  <button id="btn-añadir" class="oculto" onclick="activarModoPin()">Añadir marca</button>
+  <!-- Botones añadir -->
+  <button id="btn-añadir" class="oculto" onclick="activarModoPin('marca')">Añadir marca</button>
+  <button id="btn-añadir-evento" class="oculto" onclick="activarModoPin('evento')">Añadir evento</button>
 
-  <!-- Instrucción modo marca -->
+  <!-- Instrucción modo añadir -->
   <div id="instruccion" class="oculto">
-    Haz clic en el mapa para colocar la marca
+    Haz clic en el mapa para colocar
     <button onclick="cancelarModoPin()">Cancelar</button>
   </div>
 

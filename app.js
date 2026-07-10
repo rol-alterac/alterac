@@ -121,15 +121,23 @@ for (const tipo of TIPOS_CAPA) {
 // — Capas de marcas —
 const grupoPins    = L.layerGroup().addTo(mapa);
 const grupoNombres = L.layerGroup().addTo(mapa);
-const estadoCapas  = { marcas: true, nombres: true };
+const estadoCapas  = { marcas: true, nombres: true, eventos: true };
 
-// — Filtro por categoría —
+// — Filtro por categoría (marcas) —
 const response = await fetch('./categorias.json');
 const CATEGORIAS = await response.json();
 const categoriasVisibles = new Set(CATEGORIAS);
 
+// — Filtro por categoría (eventos) —
+const responseEv = await fetch('./categorias-eventos.json');
+const CATEGORIAS_EVENTOS = await responseEv.json();
+const categoriasEventosVisibles = new Set(CATEGORIAS_EVENTOS);
+
 function debeEstarVisible(datos) {
   const regionOk = !datos.region || datos.region === regionActiva;
+  if (datos.tipo === 'evento') {
+    return regionOk && estadoCapas.eventos && categoriasEventosVisibles.has(datos.categoria || 'Sistema');
+  }
   return regionOk && estadoCapas.marcas && categoriasVisibles.has(datos.categoria || 'Sistema');
 }
 
@@ -199,9 +207,9 @@ capasControl.appendChild(crearFilaImagen('Escudos', 'escudos', false));
 capasControl.appendChild(crearFilaImagen('Nombres', 'nombres', false));
 capasControl.appendChild(crearFilaImagen('Mapa',    'base',    true));
 
-// — Fila Marcas con desplegable de categorías —
+// — Fila Etiquetas (antes ocupaba Marcas) —
 const filaMarcas = document.createElement('div');
-filaMarcas.className = 'capa-fila capa-fila-marcas';
+filaMarcas.className = 'capa-fila capa-fila-etiquetas';
 
 const btnMarcas = document.createElement('button');
 btnMarcas.className = 'btn-capa activo';
@@ -302,20 +310,6 @@ CATEGORIAS.forEach(cat => {
   dropdownCats.appendChild(fila);
 });
 
-btnExpandirCats.addEventListener('click', () => {
-  const abierto = !dropdownCats.classList.contains('oculto');
-  dropdownCats.classList.toggle('oculto', abierto);
-});
-
-filaMarcas.appendChild(btnExpandirCats);
-filaMarcas.appendChild(btnMarcas);
-capasControl.appendChild(filaMarcas);
-capasControl.appendChild(dropdownCats);
-
-// — Fila Etiquetas —
-const filaEtiquetas = document.createElement('div');
-filaEtiquetas.className = 'capa-fila capa-fila-etiquetas';
-
 const btnEtiquetas = document.createElement('button');
 btnEtiquetas.className = 'btn-capa activo';
 btnEtiquetas.textContent = 'Etiquetas';
@@ -330,8 +324,133 @@ btnEtiquetas.addEventListener('click', () => {
   }
 });
 
-filaEtiquetas.appendChild(btnEtiquetas);
+btnExpandirCats.addEventListener('click', () => {
+  const abierto = !dropdownCats.classList.contains('oculto');
+  dropdownCats.classList.toggle('oculto', abierto);
+});
+
+filaMarcas.appendChild(btnEtiquetas);
+capasControl.appendChild(filaMarcas);
+
+// — Fila Marcas con desplegable (antes ocupaba Etiquetas) —
+const filaEtiquetas = document.createElement('div');
+filaEtiquetas.className = 'capa-fila capa-fila-marcas';
+
+filaEtiquetas.appendChild(btnExpandirCats);
+filaEtiquetas.appendChild(btnMarcas);
 capasControl.appendChild(filaEtiquetas);
+capasControl.appendChild(dropdownCats);
+
+// — Fila Eventos con desplegable de categorías —
+let catAisladaEventos        = null;
+let snapshotPreIsolateEventos = null;
+
+function sincronizarCheckboxesEventos() {
+  dropdownCatsEventos.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = categoriasEventosVisibles.has(cb.dataset.cat);
+  });
+}
+
+function entrarIsolateEventos(cat) {
+  snapshotPreIsolateEventos = new Set(categoriasEventosVisibles);
+  catAisladaEventos = cat;
+  categoriasEventosVisibles.clear();
+  categoriasEventosVisibles.add(cat);
+  sincronizarCheckboxesEventos();
+  dropdownCatsEventos.querySelectorAll('.btn-isolate').forEach(b => {
+    b.classList.toggle('activo', b.dataset.cat === cat);
+  });
+  actualizarVisibilidadMarcas();
+}
+
+function salirIsolateEventos() {
+  if (snapshotPreIsolateEventos === null) return;
+  categoriasEventosVisibles.clear();
+  snapshotPreIsolateEventos.forEach(c => categoriasEventosVisibles.add(c));
+  snapshotPreIsolateEventos = null;
+  catAisladaEventos = null;
+  sincronizarCheckboxesEventos();
+  dropdownCatsEventos.querySelectorAll('.btn-isolate').forEach(b => b.classList.remove('activo'));
+  actualizarVisibilidadMarcas();
+}
+
+const dropdownCatsEventos = document.createElement('div');
+dropdownCatsEventos.id = 'categorias-eventos-dropdown';
+dropdownCatsEventos.className = 'oculto';
+
+CATEGORIAS_EVENTOS.forEach(cat => {
+  const fila = document.createElement('div');
+  fila.className = 'cat-fila';
+
+  const check = document.createElement('input');
+  check.type        = 'checkbox';
+  check.checked     = true;
+  check.id          = `cat-ev-chk-${CSS.escape(cat)}`;
+  check.dataset.cat = cat;
+
+  check.addEventListener('change', () => {
+    if (catAisladaEventos !== null) {
+      salirIsolateEventos();
+      if (check.checked) categoriasEventosVisibles.add(cat);
+      else               categoriasEventosVisibles.delete(cat);
+      sincronizarCheckboxesEventos();
+    } else {
+      if (check.checked) categoriasEventosVisibles.add(cat);
+      else               categoriasEventosVisibles.delete(cat);
+    }
+    actualizarVisibilidadMarcas();
+  });
+
+  const lbl = document.createElement('label');
+  lbl.htmlFor     = check.id;
+  lbl.textContent = cat;
+
+  const btnIsolate = document.createElement('button');
+  btnIsolate.className   = 'btn-isolate';
+  btnIsolate.textContent = '◎';
+  btnIsolate.title       = `Solo ${cat}`;
+  btnIsolate.dataset.cat = cat;
+  btnIsolate.addEventListener('click', () => {
+    if (catAisladaEventos === cat) {
+      salirIsolateEventos();
+    } else {
+      entrarIsolateEventos(cat);
+    }
+  });
+
+  fila.appendChild(check);
+  fila.appendChild(lbl);
+  fila.appendChild(btnIsolate);
+  dropdownCatsEventos.appendChild(fila);
+});
+
+const filaEventos = document.createElement('div');
+filaEventos.className = 'capa-fila capa-fila-eventos';
+
+const btnExpandirCatsEventos = document.createElement('button');
+btnExpandirCatsEventos.className = 'btn-expandir-cats';
+btnExpandirCatsEventos.textContent = '';
+btnExpandirCatsEventos.title = 'Filtrar por categoría de evento';
+
+btnExpandirCatsEventos.addEventListener('click', () => {
+  const abierto = !dropdownCatsEventos.classList.contains('oculto');
+  dropdownCatsEventos.classList.toggle('oculto', abierto);
+});
+
+const btnEventos = document.createElement('button');
+btnEventos.className = 'btn-capa activo';
+btnEventos.textContent = 'Eventos';
+btnEventos.addEventListener('click', () => {
+  estadoCapas.eventos = !estadoCapas.eventos;
+  btnEventos.classList.toggle('activo',   estadoCapas.eventos);
+  btnEventos.classList.toggle('inactivo', !estadoCapas.eventos);
+  actualizarVisibilidadMarcas();
+});
+
+filaEventos.appendChild(btnExpandirCatsEventos);
+filaEventos.appendChild(btnEventos);
+capasControl.appendChild(filaEventos);
+capasControl.appendChild(dropdownCatsEventos);
 
 // — Fila Áreas —
 const filaAreas = document.createElement('div');
@@ -410,10 +529,11 @@ onAuthStateChanged(auth, (usuario) => {
 });
 
 function actualizarUI(usuario) {
-  const infoEl    = document.getElementById('info-usuario');
-  const btnLogin  = document.getElementById('btn-login');
-  const btnLogout = document.getElementById('btn-logout');
-  const btnAñadir = document.getElementById('btn-añadir');
+  const infoEl       = document.getElementById('info-usuario');
+  const btnLogin     = document.getElementById('btn-login');
+  const btnLogout    = document.getElementById('btn-logout');
+  const btnAñadir    = document.getElementById('btn-añadir');
+  const btnAñadirEv  = document.getElementById('btn-añadir-evento');
 
   if (usuario) {
     const nombreCompleto = usuario.displayName || '';
@@ -424,11 +544,13 @@ function actualizarUI(usuario) {
     btnLogin.classList.add('oculto');
     btnLogout.classList.remove('oculto');
     btnAñadir.classList.remove('oculto');
+    btnAñadirEv.classList.remove('oculto');
   } else {
     infoEl.textContent = '👁️ Solo lectura';
     btnLogin.classList.remove('oculto');
     btnLogout.classList.add('oculto');
     btnAñadir.classList.add('oculto');
+    btnAñadirEv.classList.add('oculto');
     cancelarModoPin();
   }
 }
@@ -582,18 +704,24 @@ function añadirMarcaAlMapa(marca) {
 
 let modoAñadirPin  = false;
 let coordsNuevoPin = null;
+let tipoCreacion   = 'marca';
 
-window.activarModoPin = function() {
+window.activarModoPin = function(tipo = 'marca') {
   if (!usuarioActual) { alert('Debes iniciar sesión.'); return; }
+  tipoCreacion = tipo;
   modoAñadirPin = true;
   document.getElementById('btn-añadir').classList.add('oculto');
+  document.getElementById('btn-añadir-evento').classList.add('oculto');
   document.getElementById('instruccion').classList.remove('oculto');
   mapa.getContainer().style.cursor = 'crosshair';
 };
 
 window.cancelarModoPin = function() {
   modoAñadirPin = false;
-  if (usuarioActual) document.getElementById('btn-añadir').classList.remove('oculto');
+  if (usuarioActual) {
+    document.getElementById('btn-añadir').classList.remove('oculto');
+    document.getElementById('btn-añadir-evento').classList.remove('oculto');
+  }
   document.getElementById('instruccion').classList.add('oculto');
   mapa.getContainer().style.cursor = '';
 };
@@ -1185,6 +1313,10 @@ window.tablaDelColumna = function(btn) {
 // ══════════════════════════════
 
 window.abrirModal = function() {
+  const tipo = tipoCreacion || 'marca';
+  const cats = tipo === 'evento' ? CATEGORIAS_EVENTOS : CATEGORIAS;
+  const etiquetaTipo = tipo === 'evento' ? 'evento' : 'marca';
+
   // Título + Categoría
   const titBody = document.getElementById('wnd-titulo-body');
   titBody.innerHTML = '';
@@ -1194,12 +1326,36 @@ window.abrirModal = function() {
   inp.placeholder = 'Título...';
   titBody.appendChild(inp);
 
+  const filaSel = document.createElement('div');
+  filaSel.style.cssText = 'display:flex;gap:6px;margin-top:6px';
   const sel = document.createElement('select');
   sel.id = 'input-categoria'; sel.className = 'crear-select';
-  sel.style.marginTop = '6px';
-  CATEGORIAS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
-  titBody.appendChild(sel);
-  sel.value = 'Sistema Genérico';
+  sel.style.flex = '7';
+  cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  filaSel.appendChild(sel);
+  sel.value = cats[0];
+
+  const selTipo = document.createElement('select');
+  selTipo.id = 'input-tipo';
+  selTipo.className = 'crear-select';
+  selTipo.style.cssText = 'width:auto;flex:3;margin-right:17px';
+  ['marca','evento'].forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v.charAt(0).toUpperCase() + v.slice(1); selTipo.appendChild(o); });
+  selTipo.value = tipoCreacion || 'marca';
+  filaSel.appendChild(selTipo);
+  titBody.appendChild(filaSel);
+
+  selTipo.addEventListener('change', function() {
+    const nuevoTipo = this.value;
+    tipoCreacion = nuevoTipo;
+    const nuevasCats = nuevoTipo === 'evento' ? CATEGORIAS_EVENTOS : CATEGORIAS;
+    const catSelect = document.getElementById('input-categoria');
+    catSelect.innerHTML = '';
+    nuevasCats.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c; catSelect.appendChild(o);
+    });
+    catSelect.value = nuevasCats[0];
+  });
 
   // Editor de descripción
   document.getElementById('wnd-texto-body').innerHTML = `
@@ -1251,9 +1407,10 @@ window.abrirModal = function() {
   });
 
   // Botones + subcategorías
+  const btnTexto = etiquetaTipo === 'evento' ? 'Guardar evento' : 'Guardar marca';
   document.getElementById('wnd-botones-body').innerHTML = `
     <div class="crear-btns">
-      <button id="btn-guardar" class="crear-btn" onclick="guardarPin()">Guardar marca</button>
+      <button id="btn-guardar" class="crear-btn" onclick="guardarPin()">${btnTexto}</button>
       <button class="crear-btn" onclick="cerrarModal()">Cancelar</button>
     </div>
   `;
@@ -1300,6 +1457,7 @@ window.guardarPin = async function() {
   const descripcion = limpiarEditorHTML(document.getElementById('input-descripcion-editor').innerHTML.trim());
   const archivos    = document.getElementById('input-fotos').files;
   const btnGuardar  = document.getElementById('btn-guardar');
+  const tipo        = document.getElementById('input-tipo').value;
 
   if (!nombre)        { alert('Escribe un nombre para el lugar.'); return; }
   if (!usuarioActual) { alert('Debes iniciar sesión.'); return; }
@@ -1327,6 +1485,7 @@ window.guardarPin = async function() {
       subcategorias,
       autor: usuarioActual.displayName || usuarioActual.email,
       region: regionActiva,
+      tipo,
       creadoEn:  new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -1517,6 +1676,9 @@ window.abrirModalEdicion = function() {
 
   fotosExistentes = [...(marca.fotos || [])];
 
+  const tipo   = marca.tipo || 'marca';
+  const cats   = tipo === 'evento' ? CATEGORIAS_EVENTOS : CATEGORIAS;
+
   // Título + Categoría (same as create, pre-filled)
   const titBody = document.getElementById('wnd-titulo-body');
   titBody.innerHTML = '';
@@ -1527,15 +1689,38 @@ window.abrirModalEdicion = function() {
   inp.value = marca.nombre;
   titBody.appendChild(inp);
 
+  const filaSel = document.createElement('div');
+  filaSel.style.cssText = 'display:flex;gap:6px;margin-top:6px';
   const sel = document.createElement('select');
   sel.id = 'input-categoria'; sel.className = 'crear-select';
-  sel.style.marginTop = '6px';
-  CATEGORIAS.forEach(c => {
+  sel.style.flex = '7';
+  cats.forEach(c => {
     const o = document.createElement('option');
     o.value = c; o.textContent = c; sel.appendChild(o);
   });
-  titBody.appendChild(sel);
-  sel.value = marca.categoria || 'Sistema Genérico';
+  filaSel.appendChild(sel);
+  sel.value = cats.includes(marca.categoria) ? marca.categoria : cats[0];
+
+  const selTipo = document.createElement('select');
+  selTipo.id = 'input-tipo';
+  selTipo.className = 'crear-select';
+  selTipo.style.cssText = 'width:auto;flex:3;margin-right:17px';
+  ['marca','evento'].forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v.charAt(0).toUpperCase() + v.slice(1); selTipo.appendChild(o); });
+  selTipo.value = tipo;
+  filaSel.appendChild(selTipo);
+  titBody.appendChild(filaSel);
+
+  selTipo.addEventListener('change', function() {
+    const nuevoTipo = this.value;
+    const nuevasCats = nuevoTipo === 'evento' ? CATEGORIAS_EVENTOS : CATEGORIAS;
+    const catSelect = document.getElementById('input-categoria');
+    catSelect.innerHTML = '';
+    nuevasCats.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c; catSelect.appendChild(o);
+    });
+    catSelect.value = nuevasCats[0];
+  });
 
   // Editor (same as create, pre-filled)
   document.getElementById('wnd-texto-body').innerHTML = `
@@ -1603,9 +1788,10 @@ window.abrirModalEdicion = function() {
   });
 
   // Botones
+  const btnTexto = tipo === 'evento' ? 'Guardar cambios (evento)' : 'Guardar cambios';
   document.getElementById('wnd-botones-body').innerHTML = `
     <div class="crear-btns">
-      <button id="btn-guardar" class="crear-btn" onclick="guardarEdicion()">Guardar cambios</button>
+      <button id="btn-guardar" class="crear-btn" onclick="guardarEdicion()">${btnTexto}</button>
       <button class="crear-btn" onclick="cerrarModalEdicion()">Cancelar</button>
     </div>
   `;
@@ -1632,6 +1818,7 @@ window.guardarEdicion = async function() {
   const descripcion = limpiarEditorHTML(document.getElementById('input-descripcion-editor').innerHTML.trim());
   const archivos    = document.getElementById('input-fotos').files;
   const btnGuardar  = document.getElementById('btn-guardar');
+  const tipo        = document.getElementById('input-tipo').value;
 
   if (!nombre)        { alert('Escribe un nombre para el lugar.'); return; }
   if (!usuarioActual) { alert('Debes iniciar sesión.'); return; }
@@ -1654,7 +1841,7 @@ window.guardarEdicion = async function() {
     const todasLasFotos = [...fotosExistentes, ...urlsNuevas];
 
     await updateDoc(doc(db, 'pins', marcaAbierta.id), {
-      nombre, categoria, descripcion,
+      nombre, categoria, descripcion, tipo,
       fotos: todasLasFotos,
       subcategorias,
       updatedAt: new Date().toISOString(),
@@ -1662,6 +1849,7 @@ window.guardarEdicion = async function() {
 
     marcaAbierta.nombre      = nombre;
     marcaAbierta.categoria   = categoria;
+    marcaAbierta.tipo        = tipo;
     marcaAbierta.descripcion = descripcion;
     marcaAbierta.fotos       = todasLasFotos;
     marcaAbierta.subcategorias = subcategorias;

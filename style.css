@@ -721,7 +721,7 @@ body::after  { bottom: 0; }
 .capa-fila .btn-capa { flex: 1; }
 
 .capa-fila-marcas {
-  transform: translate(-25px, 25px);
+  transform: translate(-20px, 25px);
 }
 
 .capa-fila-etiquetas {
@@ -729,7 +729,11 @@ body::after  { bottom: 0; }
 }
 
 .capa-fila-areas {
-  transform: translate(-24px, 25px);
+  transform: translate(-21px, 25px);
+}
+
+.capa-fila-eventos {
+  transform: translate(-20px, 25px);
 }
 
 .capas-sep {
@@ -795,7 +799,8 @@ body::after  { bottom: 0; }
 }
 
 /* Dropdown de categorías */
-#categorias-dropdown {
+#categorias-dropdown,
+#categorias-eventos-dropdown {
   background: rgba(8, 16, 38, 0.97);
   border: 1px solid #1a3060;
   border-radius: 10px;
@@ -811,16 +816,20 @@ body::after  { bottom: 0; }
   scrollbar-color: #4285F4 transparent;
 }
 
-#categorias-dropdown::-webkit-scrollbar { width: 4px; }
-#categorias-dropdown::-webkit-scrollbar-track {
+#categorias-dropdown::-webkit-scrollbar,
+#categorias-eventos-dropdown::-webkit-scrollbar { width: 4px; }
+#categorias-dropdown::-webkit-scrollbar-track,
+#categorias-eventos-dropdown::-webkit-scrollbar-track {
   background: rgba(15, 52, 96, 0.3);
   border-radius: 10px;
 }
-#categorias-dropdown::-webkit-scrollbar-thumb {
+#categorias-dropdown::-webkit-scrollbar-thumb,
+#categorias-eventos-dropdown::-webkit-scrollbar-thumb {
   background: #4285F4;
   border-radius: 10px;
 }
-#categorias-dropdown::-webkit-scrollbar-thumb:hover { background: #6aa3f8; }
+#categorias-dropdown::-webkit-scrollbar-thumb:hover,
+#categorias-eventos-dropdown::-webkit-scrollbar-thumb:hover { background: #6aa3f8; }
 
 .cat-fila {
   display: flex;
@@ -904,7 +913,7 @@ body::after  { bottom: 0; }
   font-size: 0.68rem;
 }
 #wnd-imagen-body input[type="file"]::file-selector-button { font-size: 0.85rem; }
-#preview-fotos { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+#preview-fotos { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; min-height: 65px; }
 #preview-fotos img { width: 65px; height: 65px; object-fit: cover; border-radius: 5px; }
 
 #progreso-caja { margin-top: 8px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; }
