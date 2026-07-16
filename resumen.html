@@ -1,0 +1,925 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alterac - Crónicas del Reino</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d0b0a;
+    color: #d4c9b8;
+    font-family: 'Crimson Text', Georgia, serif;
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .bg-parchment {
+    background: linear-gradient(135deg, #1a1613 0%, #0d0b0a 100%);
+    min-height: 100vh;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 2px solid #6b4c2a;
+    margin-bottom: 40px;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 3em;
+    color: #c9a86c;
+    letter-spacing: 6px;
+    text-shadow: 0 0 30px rgba(201,168,108,0.15);
+  }
+  .subtitle {
+    font-style: italic;
+    color: #8a7a65;
+    margin-top: 8px;
+    font-size: 1.1em;
+    letter-spacing: 2px;
+  }
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: #c9a86c;
+    font-size: 1.6em;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #3a2a1a;
+    letter-spacing: 2px;
+  }
+  h3 {
+    font-family: 'Cinzel', serif;
+    color: #b8945c;
+    font-size: 1.15em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .top-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  .top-btn {
+    background: #1e1814;
+    border: 1px solid #3a2a1a;
+    color: #d4c9b8;
+    padding: 12px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .top-btn:hover { background: #2a2018; border-color: #6b4c2a; color: #c9a86c; }
+  .top-btn.active { background: #3a2a1a; border-color: #c9a86c; color: #e8d5b0; }
+  .houses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .house-btn {
+    background: #1e1814;
+    border: 1px solid #3a2a1a;
+    color: #d4c9b8;
+    padding: 14px 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .house-btn:hover { background: #2a2018; border-color: #6b4c2a; color: #c9a86c; }
+  .house-btn.active { background: #3a2a1a; border-color: #c9a86c; color: #e8d5b0; }
+  .content-box {
+    background: #14100d;
+    border: 1px solid #2a2018;
+    padding: 32px;
+    margin-bottom: 40px;
+    border-radius: 6px;
+  }
+  .content-box p { margin-bottom: 16px; text-align: justify; }
+  .content-box p:last-child { margin-bottom: 0; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .stromgarde-section {
+    margin-top: 24px;
+    padding: 24px;
+    background: #1a1210;
+    border-left: 3px solid #8b3a2a;
+    border-radius: 0 6px 6px 0;
+  }
+  .stromgarde-section h3 { color: #c96a4a; }
+  .info-box {
+    margin-top: 24px;
+    padding: 20px;
+    background: #121a15;
+    border-left: 3px solid #4a8b5a;
+    border-radius: 0 6px 6px 0;
+  }
+  .info-box h3 { color: #6ac97a; margin-bottom: 14px; letter-spacing: 2px; font-size: 1em; }
+  .info-grid { display: flex; flex-direction: column; gap: 5px; }
+  .info-row {
+    display: flex;
+    padding: 5px 10px;
+    background: rgba(74,139,90,0.06);
+    border-radius: 4px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .info-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7em;
+    color: #6ac97a;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    min-width: 95px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    line-height: 1.6;
+  }
+  .info-value {
+    color: #d4c9b8;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  .cronologia-box {
+    margin-top: 24px;
+    padding: 20px 20px 20px 28px;
+    background: #15121a;
+    border-left: 3px solid #6a4a8b;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+  .cronologia-box h3 { color: #9a6ac9; margin-bottom: 16px; font-size: 1.1em; letter-spacing: 2px; }
+  .cronologia-box .timeline-line {
+    position: absolute;
+    left: 14px;
+    top: 56px;
+    bottom: 16px;
+    width: 2px;
+    background: linear-gradient(to bottom, #6a4a8b, #3a2a4a 60%, transparent);
+    border-radius: 1px;
+  }
+  .cronologia-box .evento {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 10px 12px 10px 22px;
+    border-radius: 4px;
+    background: rgba(106,74,139,0.06);
+    border: 1px solid rgba(106,74,139,0.12);
+    transition: all 0.3s ease;
+  }
+  .cronologia-box .evento:hover {
+    background: rgba(106,74,139,0.12);
+    border-color: rgba(106,74,139,0.3);
+    transform: translateX(2px);
+  }
+  .cronologia-box .evento::before {
+    content: '◆';
+    position: absolute;
+    left: -16px;
+    top: 10px;
+    color: #9a6ac9;
+    font-size: 8px;
+    text-shadow: 0 0 6px rgba(154,106,201,0.5);
+  }
+  .cronologia-box .fecha {
+    color: #b894e0;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .cronologia-box .desc {
+    color: #c4b8d4;
+    font-size: 0.95em;
+    line-height: 1.5;
+    display: block;
+  }
+  .timeline-global {
+    margin-top: 24px;
+    padding: 20px 20px 20px 28px;
+    background: #15121a;
+    border-left: 3px solid #6a4a8b;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+  .timeline-global h3 { color: #9a6ac9; margin-bottom: 16px; font-size: 1.1em; letter-spacing: 2px; }
+  .timeline-global .timeline-line {
+    position: absolute;
+    left: 14px;
+    top: 56px;
+    bottom: 16px;
+    width: 2px;
+    background: linear-gradient(to bottom, #6a4a8b, #3a2a4a 60%, transparent);
+    border-radius: 1px;
+  }
+  .timeline-global .evento {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 10px 12px 10px 22px;
+    border-radius: 4px;
+    background: rgba(106,74,139,0.06);
+    border: 1px solid rgba(106,74,139,0.12);
+    transition: all 0.3s ease;
+  }
+  .timeline-global .evento:hover {
+    background: rgba(106,74,139,0.12);
+    border-color: rgba(106,74,139,0.3);
+    transform: translateX(2px);
+  }
+  .timeline-global .evento::before {
+    content: '◆';
+    position: absolute;
+    left: -16px;
+    top: 10px;
+    color: #9a6ac9;
+    font-size: 8px;
+    text-shadow: 0 0 6px rgba(154,106,201,0.5);
+  }
+  .timeline-global .fecha {
+    color: #b894e0;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .timeline-global .desc {
+    color: #c4b8d4;
+    font-size: 0.95em;
+    line-height: 1.5;
+    display: block;
+  }
+  .actualmente-box {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1a1210 0%, #15100e 100%);
+    border-left: 3px solid #c96a4a;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+  .actualmente-box::before {
+    content: '⚔';
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    font-size: 20px;
+    opacity: 0.15;
+  }
+  .actualmente-box h3 { color: #c96a4a; font-size: 1.1em; letter-spacing: 2px; }
+  .actualmente-box p { color: #d4c0b0; }
+  .separator {
+    text-align: center;
+    color: #3a2a1a;
+    font-size: 1.5em;
+    letter-spacing: 10px;
+    margin: 20px 0;
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 2em; }
+    .houses-grid { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 20px 12px; }
+    .content-box { padding: 20px; }
+    .top-bar { flex-direction: column; }
+    .top-btn { text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-parchment">
+<div class="container">
+
+<header>
+  <h1>ALTERAC</h1>
+  <div class="subtitle">Crónicas del Reino — Año 574</div>
+</header>
+
+<div class="top-bar">
+  <button class="top-btn active" id="btnReino" onclick="showView('reino')">RESUMEN DEL REINO</button>
+  <button class="top-btn" id="btnUltimos" onclick="showView('ultimos')">ÚLTIMOS EVENTOS</button>
+  <button class="top-btn" id="btnStromgarde" onclick="showView('stromgarde')">GUERRA CONTRA STROMGARDE</button>
+</div>
+
+<h2>Casas Nobles</h2>
+<div class="houses-grid" id="housesGrid"></div>
+
+<div class="content-box view active" id="viewReino">
+  <h2>Resumen General del Reino</h2>
+  <div id="reinoContent"></div>
+</div>
+
+<div class="content-box view" id="viewUltimos">
+  <h2>Últimos Eventos — Situación Final</h2>
+  <div id="ultimosContent"></div>
+</div>
+
+<div class="content-box view" id="viewStromgarde">
+  <h2>⚔ La Guerra contra Stromgarde</h2>
+  <div id="stromgardeContent"></div>
+</div>
+
+<div class="content-box view" id="viewCasa">
+  <div id="houseContent"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const houses = [
+  {
+    id: "heldt",
+    name: "Casa Real Heldt",
+    content: `<h3>Casa Real Heldt — La Corona</h3>
+<p><b>Rey Soren IV Heldt</b> gobierna Alterac desde el trono del Halcón, su dinastía asentada tras generaciones de conflictos fronterizos con Stromgarde. Su salud siempre ha sido frágil: en marzo sufrió un grave deterioro con venas negras brotando en su espalda como raíces, obligando a preparar la Emergentia Rex en secreto. Se recuperó milagrosamente y publicó un ambicioso decreto real —reposición de pérdidas de guerra, levas, impuestos del 10%, construcción de Freiheit en El Quebrado y extensión del Camino Real— y nombró a Inarus Stagger Mano del Rey en junio, superando la oposición de varias casas. En el plano exterior, movilizó al ERSM hacia el Muro de Fuego, advirtió personalmente a Zorislav II con la célebre carta del Halcón, invitó al líder de la Luz de Ventormenta y aceptó la visita de la Princesa Elaine-Katherine de Gilneas. Reclama también el título de Rey de Stromgarde por derecho de sangre como heredero de Oswulf III, escalando la tensión dinástica con el reino vecino. Creó a los Rex Custodius, agentes de campo para hacer valer la ley en todo el reino. Mantuvo el equilibrio entre las casas nobles con mano firme: protegió a Stagger de sus enemigos, emitió un ultimátum a Corin Vallend en octubre, y luego lo nombró Consejero del Dominio en noviembre.</p>
+<p><b>El Príncipe Kuno Heldt</b>, "el príncipe del pueblo". A través de la Real Fundación del Príncipe —exenta de impuestos— ha llevado ayuda humanitaria con curanderos, profesores y voluntarios a decenas de aldeas en la Riera del Throndil, las Hinterlands, el Valle de la Disputa, la Caverna Roja y el Señorío Perenolde. Se distinguió en la Batalla de Coraza de Abynn en junio como "Príncipe del Fuego", luchando con una magia de fuego que heredó de su linaje. Ha abrazado la fe de la Llama, defendiéndola en el Templo de la Fe en septiembre y anulando las incautaciones del Regente. Condenó la persecución del Santo Fuego en Miranthys calificándola de "deleznable". En la Isla del Purgatorio realizó una exhibición de magia de fuego que el pueblo tomó por milagro; los clérigos locales quedaron inquietos. Su hermana Karolina Heldt regresó a la corte tras su divorcio en septiembre. En el plano personal, Kuno mantiene una relación cercana con Lady Angela Brennen —forjada en la Puerta de Heldt cuando la encontró al borde del colapso— que culminó en noviembre con el anuncio de su boda en el Septo de Fuego. Lejos de Alterac, existe un secreto que pocos conocen: el Rey Zorislav de Stromgarde tuvo un hijo bastardo también llamado Kuno, un poderoso hechicero entrenado por antiguos magos de guerra trol, capaz de eliminar a cientos de enemigos en solitario. El otro Kuno, el de Stromgarde, sigue siendo una amenaza latente para el reino.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Rey Soren IV Heldt, soberano de Alterac</span></div>
+<div class="info-row"><span class="info-label">Heredero</span><span class="info-value">Príncipe Kuno I Heldt ("el príncipe del pueblo")</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Ciudad de Alterac (El Nido)</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">La Corona controla el corazón del reino, incluyendo la Ciudad de Alterac y el ERSM. Autoridad sobre todas las casas nobles vasallas.</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Rey Soren IV; Príncipe Kuno; Bernhardt (Chambelán); Lord Inarus Stagger (Mano del Rey); Karolina Heldt</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Neutral — libertad religiosa entre la Luz, la Llama y la Dama del Lago</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">ERSM: 5.570 efectivos iniciales; ~18.910 tras reclutamiento forzoso</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">El Rey nombra a Corin Vallend Consejero del Dominio y otorga el control del Puente Throndil a Angela Brennen. Anuncia la movilización total contra Stromgarde. Se anuncia la boda del Príncipe Kuno con Angela Brennen en el Septo de Fuego. El Rey viaja a Lagerfreuer, vela el cuerpo de Esmeril Brennen y se reúne con Hans Brennen en el Septo de la Llama para aliviar las tensiones entre la Luz y la Llama.</span></div>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">El Príncipe Kuno visita la Isla del Purgatorio y realiza una exhibición pública de magia de fuego, predicando sobre la Llama. El Rey emite un ultimátum público a Corin Vallend y le envía una carta privada recordándole su lealtad.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">El Rey anuncia la adhesión de las Casas Barov y Barothy. Se anuncia la visita del Arzobispo Theodosius a Alterac. El Príncipe Kuno asiste a una misa de la Llama en el Templo de la Fe, declarando que la Corona protege la fe y anulando las incautaciones de fondos ordenadas por el Regente. Karolina Heldt defiende la autoridad del Regente. El Rey llega al Castillo Bathory como invitado de honor.</span></div>
+<div class="evento"><span class="fecha">Jun 574</span><span class="desc">El Rey proclama a Inarus Stagger como Mano del Rey (6 Jun). El Príncipe Kuno se distingue en la Batalla de Coraza de Abynn (10 Jun), aclamado como "Príncipe del Fuego" e "Hijo de la Llama". El Rey viaja a Lagerfreuer (14 Jun), se reúne con Hans Brennen y las tropas, y emite una Amnistía General para crímenes de la Guerra Civil. Advierte que la autoridad de la Mano del Rey es suprema, segunda solo a la Corona.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">El Rey se recupera gradualmente de su enfermedad y publica un Decreto Real: reposición de pérdidas de guerra, aumento de levas, subida de impuestos del 10%, construcción de Freiheit en El Quebrado y extensión del Camino Real. Crea la Real Fundación del Príncipe, invitando a Kuno a representar a la Corona en labores benéficas. Invita al líder de la Iglesia de la Luz de Ventormenta y acepta la propuesta de Stagger de invitar a la Casa Ashbury de Gilneas al torneo. El Príncipe Kuno interviene en la crisis de Miranthys condenando la persecución del Santo Fuego.</span></div>
+<div class="evento"><span class="fecha">Abr 574</span><span class="desc">Asesinato del Rey Zorislav II de Stromgarde. La Reina Karynka asume el trono y abandona temporalmente sus aspiraciones de conquista para consolidar su poder interno.</span></div>
+<div class="evento"><span class="fecha">Mar 574</span><span class="desc">La salud del Rey se deteriora gravemente. Sus médicos advierten que podría ser necesario invocar la Emergentia Rex. Se envía alerta discreta a todo el Consejo Real para que estén preparados.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Último Consejo Real durante la Guerra Civil. El Rey coordina la campaña final y escribe carta secreta a Inarus Stagger ofreciéndole protección real. Moviliza al ERSM (5.570) hacia el Muro de Fuego tras advertencia de Stromgarde. Envía carta pública a Zorislav II exigiendo respeto al tratado y ordena a Esmeril Brennen investigar al informante anónimo.</span></div>
+</div>`
+  },
+  {
+    id: "vallend",
+    name: "Casa Vallend",
+    content: `<h3>Casa Vallend — El Norte</h3>
+<p><b>Lord Corin I Vallend</b>, Duque del Norte y Consejero del Dominio. Su casa tiene profundas raíces en las Tierras Altas, donde durante generaciones han sido los guardianes del norte frente a las inclemencias y las amenazas exteriores. Fue artífice de la victoria en la Guerra Civil: tomó Strahnbrad —aunque la quema de la ciudad manchó su reputación, con canciones satíricas acusándolo de "señor de sombras y traición"—, conquistó la Fortaleza del Grajo y renombró Ritterburg como <b>Corinstadt</b>, una nueva ciudad-bastión de canales de roca y agua, altas murallas y vocación de centro comercial del norte, ya que la antigua familia Ritterburg desapareció en la guerra. Extendió su influencia a las Hinterlands mediante la boda de su prima Avery con Lord Edward Odseer, aunque su intento de construir un bastión militar en Cima del Vigía generó una grave crisis con Stagger que requirió mediación de Kolbeck. En octubre, la supuesta invasión de Zdenek Dum sacudió el norte: Corin fue capturado en Bastión Dum, pero el desenlace reveló una hábil maniobra de Vallend. Dum, exiliado durante generaciones en las Islas Dum, recuperó las Tierras Altas como casa vasalla de Vallend; a cambio, la Casa Dum juró lealtad a Corin y suministra alimento a todo el norte. El matrimonio de Avery con Zdenek Dum selló el pacto. El Rey lo nombró Consejero del Dominio en noviembre, otorgándole autoridad sobre guardias, prisiones y vías del reino, y creó la Baronía del Valle Esmeralda para Sir Swayer Vallend, consolidando el poder absoluto de Corin en el norte.</p>
+<p>Corin ha consolidado alianzas con Brennen (la boda de Sir Swayer con Lady Agatha Brennen, aunque Sir Adrien Valcrest la desafió a justas) y mantiene correspondencia constante con Angela Brennen para coordinar estrategias. Su coronel Augustus von Stein, artífice de la quema de Strahnbrad, lidera sus tropas con mano de hierro. Sin embargo, la tragedia golpeó a la familia: Thevan Vallend, padre de Avery, fue decapitado por orden de la Reina Karynka de Stromgarde, y su cabeza enviada como mensaje. La supuesta captura de Bastión Dum por Zdenek Dum trastocó el norte, pero el desenlace demostró quién movía realmente los hilos: Corin Vallend. Avery, rescatada del norte, anuló su matrimonio con Odseer y se unió a Dum, anexionando así a la antigua Casa Dum —y sus islas— bajo la órbita Vallend. Dum recuperó las Tierras Altas como vasallo de Corin, que garantiza su protección a cambio de lealtad y alimentos. El Rey aprobó el acuerdo. En el plano personal, Corin rechazó un matrimonio con Karolina Heldt, señal de su independencia política incluso frente a la Corona, pues ya no necesita más alianzas: su poder en el norte es absoluto.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Corin I Vallend, Duque del Norte y Consejero del Dominio</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Corinstadt (antes Ritterburg), ciudad-bastión de canales y murallas</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Tierras Altas, Fortaleza del Grajo, Strahnbrad (ruinas), Hinterlands</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Corin Vallend; Lady Avery Vallend; Sir Swayer Vallend; Cnel. Augustus von Stein</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">El mayor del reino: hasta 7.500 soldados. Bombardeo desde montañas, disciplina férrea</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">La Luz — Lord Corin es devoto de la Luz Sagrada</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Lady Avery Vallend es rescatada del norte y su matrimonio con Lord Odseer es anulado. Se acuerda la unión entre Lady Avery y Lord Zdenek Dum, integrando a la Casa Dum como vasalla de Vallend: Dum recupera las Tierras Altas a cambio de lealtad y suministro de alimento. El Rey Soren aprueba la unión y crea la Baronía del Valle Esmeralda para Sir Swayer Vallend. El poder de Corin en el norte queda consolidado.</span></div>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">Zdenek Dum captura Bastión Dum y al Duque Corin Vallend. Corin es hecho prisionero. Dum se proclama Verdadero Rey de las Tierras Altas. Los Vallend rechazan la ayuda de Stagger y movilizan 4.000 hombres por su cuenta. Apoyo popular masivo a Dum en el norte. Semanas después, el desenlace revelará que todo fue una maniobra de Vallend para anexionar a Dum.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">Lady Karolina Heldt regresa a la corte real. El Camino Real se completa en las Mil Colinas. Tensión con Stagger por los aranceles impuestos. Corin moviliza fuerzas ante la creciente amenaza de Dum en el norte.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Boda Avery Vallend-Lord Edward Odseer: las Hinterlands pasan a la esfera Vallend. Corin negocia con Brennen un bastión. Crisis con Stagger por bloqueo naval: Corin moviliza 7.500 soldados al mando de von Stein. Mediación de Kolbeck logra la paz.</span></div>
+<div class="evento"><span class="fecha">Abr 574</span><span class="desc">Ritterburg es renombrada Corinstadt. Inversión colosal en canales y murallas para convertirla en la nueva capital del norte.</span></div>
+<div class="evento"><span class="fecha">Feb 574</span><span class="desc">Corin diseña la emboscada de Strahnbrad: Cassius tenderá una trampa con linces y 400 hombres contra el ejército Perenolde (4.000). Presiona a Brennen y a la Orden del Sauco para consolidar su posición en el norte.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">El ejército Vallend entra en Strahnbrad en ruinas. Inicio del asedio a la Fortaleza del Grajo. Corin decreta la expulsión del Zafiro Azul. Comienza el asedio formal con bombardeo coordinado desde las montañas.</span></div>
+</div>`
+  },
+  {
+    id: "brennen",
+    name: "Casa Brennen",
+    content: `<h3>Casa Brennen — El Valle de la Disputa</h3>
+<p><b>Lady Angela Brennen</b> ascendió a Lady del Valle tras la renuncia de su padre, Lord Esmeril Brennen, consumido por una enfermedad debilitante que describió como un "hombre de hierro roto por sus propias decisiones". Esmeril había servido como Mano del Rey durante años, dirigiendo espías al otro lado del Muro de Fuego y descubriendo secretos como la existencia del bastardo hechicero Kuno en Stromgarde. Angela demostró su valía en la Guerra Civil derrotando a los Montrose en la Batalla de Sherwuld, donde su espada se encendió en llamas durante el duelo contra Sir Lanzolt Montrose. Ejecutó personalmente a Alistair y Bernice Montrose a pesar de haber prometido un peregrinaje a Ventormenta. Ha iniciado un rearme masivo: compró artillería a Vallend, cerró la Puerta Heldt desplegando 5.000 soldados, estableció "la red" de tres controles fronterizos contra el Santo Fuego, y en noviembre el Rey Soren le otorgó el control directo del Puente Throndil. Como Consejera de la Guerra, firmó la movilización total: 9.000 carbones cruzaron hacia el Muro de Fuego proclamando "La Última Guerra". Su prima Elsa Freuerkrieg partió como emisaria a Dalaran para buscar apoyos mágicos. Su hermana Agatha Brennen fue prometida a Sir Swayer Vallend, fortaleciendo la alianza norteña.</p>
+<p>Religiosamente, la Casa Brennen es el bastión de la Llama. Su hermano <b>Hans Brennen</b>, el Sagrado Ardor, fue elegido Sumo Sacerdote a los 16 años tras una reñida elección entre cuatro candidatos. Pupilo del fallecido Wyman Flemeric, Hans es reservado, eficiente, inteligente e implacable; aboga por la castidad, la autoridad religiosa centralizada y la destrucción de Grigor Ruskinovsky, su némesis al otro lado del Muro. Formó una milicia paramilitar para proteger a los fieles y ordenó el regreso de todo clérigo errante al Septo de Fuego. Bajo su mandato, la Capilla de Stefon el Tenaz se inauguró en Sherwuld, duplicando el tamaño de la ermita de la Luz vecina. Angela forjó una alianza personal con el Príncipe Kuno —a quien encontró al borde del colapso en la Puerta de Heldt en junio, queriendo rescatar cautivos al otro lado del muro, y lo convenció de regresar— que culminó en noviembre con el anuncio de su boda en el Septo de Fuego. Lord Esmeril Brennen falleció el 31 de octubre a los 60 años; el Rey Soren veló su cuerpo, y Cassius Miranthys viajó desde Myrann para el funeral.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lady Angela Brennen, Lady del Valle</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Lagerfreuer — ciudad lúgubre con el Septo de Fuego y sus vidrieras rojas</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Valle de la Disputa, Muro de Fuego, rutas hacia Stromgarde</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Angela Brennen; Hans Brennen (Sagrado Ardor); Lord Esmeril Brennen; Günter Freuerkrieg; Elsa Freuerkrieg; Bertha Schneider</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Ejército del Fuego: 4.000 soldados, planea 7.000. Artillería de Vallend</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Llama Primigenia — Septo de Fuego en Lagerfreuer</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Angela declara la movilización total de la Casa Brennen: 9.000 carbones cruzan hacia el Muro de Fuego. Proclama "La Última Guerra ha comenzado". Lord Esmeril Brennen fallece. Angela vela su cuerpo en Lagerfreuer. Cassius Miranthys acude al funeral.</span></div>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">Batalla por las Tres Hermanas en apoyo a Miranthys. Las fuerzas Brennen se enfrentan a Stagger. Angela mantiene 6.000 soldados en el Muro de Fuego mientras se intensifica la crisis del norte.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">Angela desmoviliza 2.000 soldados pero mantiene 6.000 en el Muro de Fuego. Lord Jason Prestor se convierte a la Llama y se vuelve aliado de Hans Brennen. Las aldeas de Keld y Arkaley son incendiadas por un ejército misterioso.</span></div>
+<div class="evento"><span class="fecha">Jun 574</span><span class="desc">Angela encuentra al Príncipe Kuno al borde del colapso en la Puerta de Heldt, queriendo rescatar cautivos al otro lado del muro. Lo convence de regresar a Lagerfreuer. Inicio de la Marcha sobre Stromgarde.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Inauguración de la Capilla de Stefon el Tenaz. Angela negocia con Corin Vallend, presiona a Cassius contra el Santo Fuego y establece "la red" de tres controles fronterizos. Envía 2.000 soldados a las Hinterlands en apoyo a Vallend. Elsa Freuerkrieg parte hacia Dalaran.</span></div>
+<div class="evento"><span class="fecha">Feb 574</span><span class="desc">La Llama convoca elecciones para Sumo Sacerdote. Hans Brennen resulta elegido a sus 16 años como el más joven de la historia. Angela cierra la Puerta Heldt y despliega 5.000 soldados en el Muro de Fuego. 250 misioneros parten del Valle de la Disputa.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Batalla de Sherwuld: Angela derrota a los Montrose y su espada se enciende en llamas. Ejecuta a Alistair y Bernice Montrose. Recibe la carta anónima de Stromgarde y activa el protocolo de defensa fronteriza.</span></div>
+</div>`
+  },
+  {
+    id: "stagger",
+    name: "Casa Stagger",
+    content: `<h3>Casa Stagger — Las Mil Colinas y La Marca</h3>
+<p><b>Lord Inarus Stagger</b> ha escalado desde Capitán General a la posición más poderosa del reino tras la Corona. Su casa tiene un origen legendario: los Stagger vinieron de Lordaeron, de los bosques que hoy pertenecen a Gilneas. Planearon una boda entre un antepasado y una Reina Ashbury para afianzar la paz, pero los Godfrey —la Mano del Rey de entonces— sembraron mentiras y los Stagger fueron quemados y exterminados. "Estuvimos tan cerca de ser reyes", confesó Inarus a Glover. Derrotó a los Falconcrest en las Mil Colinas en una sangrienta batalla donde Glover y los enanos crearon un semicírculo de fuego que atrapó a sus propios mercenarios, forzándolos a luchar hasta el final. Integró al Zafiro Azul, 3.500 mercenarios, como ejército regular de las Mil Colinas, y repartió el botín de guerra entre Othmar, Kolbeck, Miranthys y Stagger. El Rey Soren lo nombró <b>Mano del Rey</b> el 6 de junio tras una carta privada donde Inarus se ofrecía como pieza en el tablero del rey para atraer a Gilneas. Como Regente durante la ausencia del Rey en septiembre, enfrentó la crisis con Brennen, Vallend y el desafío público del Príncipe Kuno, respondiendo con mano firme pero revocando medidas extremas.</p>
+<p>Stagger mantiene una red de influencia que abarca desde La Marca —cuyo puerto puede mantener la flota de Alterac— hasta las Mil Colinas. Ha iniciado el servicio militar obligatorio en la región, contratado a los thanes enanos Torvin y Throin para vigilar el puente Thandol, e invitado a la Casa Ashbury de Gilneas al reino para un proyecto secreto que prometió "dejar a los siete reinos asombrados". Interceptó al Barón Fernando Ayamonte en el camino real, ofreciéndole una alianza que Fernando aceptó con cautela. Su guardaespaldas Glover, un mercenario de pasado violento, fue armado caballero por Sir Adrien Valcrest tras recibir clases de caballería donde aprendió el código de honor. El 5 de noviembre, Inarus resultó gravemente herido durante el asesinato del Arzobispo Theodosius III en la catedral de Lindhaven, donde él era el blanco principal. Desde su lecho, coordina la estrategia bélica con la flota de Ayamonte y ha nombrado a Sir Spencer Falconcrest —que empuña un mandoble de mithril— como Señor Regente de las Mil Colinas, con 5.000 soldados bajo su mando.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Inarus Stagger, Señor de las Mil Colinas y La Marca, Capitán General, Mano del Rey</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Lindhaven (catedral de la Luz). La Marca: puerto comercial</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Mil Colinas, La Marca (frontera con Gilneas), control sobre Falconcrest</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Inarus Stagger; Glover (caballero mercenario); Sir Spencer Falconcrest; Lord Josef Stanton</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">3.500 (Zafiro Azul) + refuerzos. Spencer: 3.000 en La Marca, 2.000 en Lindhaven</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">La Luz — favorable a libertad religiosa</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Inarus resulta herido durante el asesinato del Arzobispo Theodosius III en Lindhaven. Como Mano del Rey, coordina la estrategia bélica contra Stromgarde y supervisa el reclutamiento forzoso.</span></div>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">Tensiones políticas en el Consejo. Stagger envía 5.000 soldados al norte tras la rebelión de Dum. Los Vallend rechazan su ayuda. La crisis del norte debilita su posición política.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">Se celebra un juicio político contra Inarus ante el Consejo Real. Imposición de aranceles a las Tierras Altas que generan nuevas tensiones. Batalla por las Tres Hermanas entre la alianza Brennen-Miranthys y sus fuerzas.</span></div>
+<div class="evento"><span class="fecha">Jun 574</span><span class="desc">Inarus es nombrado oficialmente Mano del Rey. Emite su primer comunicado oficial instando a la unidad y enviando suministros. Inicio de la Marcha sobre Stromgarde que culmina con la derrota del golpe en la Ciudad de Strom.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Crisis con Vallend por el bastión en Hinterlands: Inarus bloquea el río y moviliza 5.000 soldados. Mediación de Kolbeck logra la paz. Ofrece alianza a Lord Ayamonte. El Rey acepta su propuesta de invitar a Gilneas al torneo.</span></div>
+<div class="evento"><span class="fecha">Feb 574</span><span class="desc">Inarus propone a Lord Othmar para un puesto en el Consejo Real y negocia la compra de piedra para sus proyectos. Sir Jonah Falconcrest es enviado a la Sima Ígnea. El Zafiro Azul se integra como ejército regular.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Batalla de las Mil Colinas: Inarus y el Zafiro Azul derrotan a los Falconcrest (1.870 muertos). Entra en Lindhaven y se corona simbólicamente. Recibe protección real del Rey Soren.</span></div>
+</div>`
+  },
+  {
+    id: "valcrest",
+    name: "Casa Valcrest",
+    content: `<h3>Casa Valcrest — Orden del Sauco</h3>
+<p><b>Sir Adrien Valcrest</b> se alzó como Hochmeister de la Orden del Sauco invocando la antigua ley <b>Principia Equitum</b>, establecida por Lord Andoor Valcrest siglos atrás, que permite a la Casa Valcrest asumir el control de la Orden si posee un heredero apto tras la muerte del Gran Maestre. La muerte natural de Sir Reiner Höfle Teilmann a los 65 años dejó a la Orden sin liderazgo; el jinete de Entrerríos cabalgó al sur y Adrien reclamó su derecho. Esto generó una feroz controversia con Angela Brennen, que lo acusa de golpista, y con Hans Brennen, que argumenta que un hombre bautizado por la Luz no puede heredar una orden que él había consagrado a la Llama. Lady Brienne Valcrest, madre de Adrien y Consejera de Justicia, defendió la legalidad de la sucesión. Corin Vallend propuso una justa para dirimir el control de la Orden —si Adrien perdía, cedería el mando a Lady Avery Vallend— pero Adrien rechazó la propuesta por mancillar el noble arte de la justa, afirmando que lucha por ideales puros, no por ganancias políticas.</p>
+<p>Adrien ha defendido la libertad religiosa dentro de la Orden, negándose a consagrarla a la Llama pese a las presiones de Avery Odseer, que amenazó con expulsar a la Orden de las Hinterlands. Llegó a un acuerdo con Corin Vallend: retirada de las Hinterlands a cambio de expansión al sur, en tierras cedidas por Stagger. Ha impartido clases de caballería al mercenario Glover —enseñándole lealtad, honor, bondad, templanza, perseverancia, valor, amor y justicia— y lo armó caballero en junio. Su hermana <b>Eloise Valcrest</b> sigue prometida a Cassius Miranthys; ha escrito cartas ansiosas preguntando por la boda y pidiendo a Cassius que hable con su prima Angela para calmar el conflicto. Sus hermanos pequeños Evie y Ballian huyen asustados cada vez que ven a Glover por los pasillos. Adrien es descrito como jinete prodigio, hábil espadachín y actual campeón del IV Torneo de Justas del Norte.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Sir Adrien Valcrest, Hochmeister de la Orden del Sauco</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Fortaleza de Entrerríos</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Territorios en el sur. Orden del Sauco: terrenos en Hinterlands (expansión al sur)</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Sir Adrien Valcrest; Eloise Valcrest; Lord Edmund Valcrest; Glover; Evie y Ballian Valcrest</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Caballeros de la Orden del Sauco</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Mixta — Luz y Llama conviven bajo libertad religiosa</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">El Torneo de las Tierras Altas finalmente se celebra. Glover y Sir Adrien tienen un tenso enfrentamiento en las mazmorras del castillo. Adrien sigue firme al mando de la Orden del Sauco.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">Sir Adrien abandona la búsqueda del joven Lord Edward Odseer tras su secuestro. La Orden se centra en sus operaciones de reclutamiento y defensa territorial ante la creciente amenaza.</span></div>
+<div class="evento"><span class="fecha">Jun 574</span><span class="desc">Glover es formalmente investido como Sir Glover de la Orden del Sauco tras completar su entrenamiento de caballería. La Orden se prepara ante la inminente amenaza de Stromgarde.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Adrien anuncia el Torneo de las Tierras Altas. La Orden solicita expansión territorial. Acuerdo con Corin Vallend: retirada de Hinterlands a cambio de protección. Adrien rechaza consagrar la orden a la Llama.</span></div>
+<div class="evento"><span class="fecha">Feb 574</span><span class="desc">Sir Adrien Valcrest invoca la Principia Equitum y reclama el control de la Orden del Sauco. Hans Brennen y Angela protestan. La Consejera de Justicia respalda a Valcrest. Glover llega para recibir clases de caballería.</span></div>
+</div>`
+  },
+  {
+    id: "miranthys",
+    name: "Casa Miranthys",
+    content: `<h3>Casa Miranthys — La Baronía Minera</h3>
+<p><b>Lord Cassius Miranthys</b>, Consejero de Eventos, ha transformado su baronía montañosa en una potencia económica. Durante generaciones, los Miranthys han combatido a Stromgarde con tácticas de guerrilla, trampas y emboscadas en las montañas; sus famosos linces gigantes siembran el terror en el campo de batalla. En la Guerra Civil sus linces participaron en la Batalla de las Mil Colinas taponando brechas en las líneas mercenarias, y en Strahnbrad ejecutaron una emboscada devastadora aunque 200 de 300 murieron en las llamas. Cassius descubrió mithril en las montañas del Quebrado, y la baronía exporta el mineral más preciado del reino para armaduras y armas. Los enanos cavan un túnel bajo la montaña hacia tierras Montrose. Durante la excavación, encontraron un dragón en las profundidades; Cassius dirigió una expedición que lo abatió, y su cabeza decora la torre del castillo mientras sus escamas se forjan en armaduras legendarias.</p>
+<p>Enfrentó una grave crisis religiosa al permitir el culto al Santo Fuego: la capilla fue quemada por una turba enfurecida después de que un devoto dejara ciego al sacerdote de la Llama Maestre Liniu Ganniux. Mario Arkanthos, el emisario convertido al Santo Fuego, fue torturado con la lengua cortada y encerrado. Cassius promulgó leyes draconianas —pena de muerte por posesión de libros del Santo Fuego— y el Príncipe Kuno condenó las medidas como "deleznables", pero Cassius se defendió citando los ataques stromgardianos. Arkanthos murió inmolado espontáneamente en su celda, gritando el nombre del Santo Fuego a pesar de no tener lengua; su familia recibió tierras en El Quebrado. En octubre, un brote de viruela mató a ~1.300 personas en Myrann; Cassius lideró una marcha de 2.000 personas pidiendo ayuda médica, impuso cuarentena y toque de queda, y El Quebrado abasteció a la ciudad sitiada por la enfermedad. En las Cavernas Llameantes, un ayuno de tres días le dejó una misteriosa quemadura en el rostro, y perdió un ojo que reemplazó con un ojo de mithril. La epidemia terminó cuando las Cavernas Llameantes explotaron. Cassius fue nombrado Conde de Myrann y El Quebrado por decreto real. En lo constructivo, inició <b>Freiheit</b> en El Quebrado —un nuevo valle cálido de cítricos, minería y viñedos—, completó Las Tres Hermanas (tres fortalezas en medialuna en el lago para defensa contra Stromgarde) y los Pasillos Llameantes (templo subterráneo de la Llama). Cassius acudió a Lagerfreuer a velar el cuerpo de Lord Esmeril Brennen en noviembre.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Cassius Miranthys, Barón de Miranthys y Consejero de Eventos</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Myrann</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Barónía Miranthys, El Quebrado (cultivo y minería), Las Tres Hermanas (fortalezas)</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Cassius Miranthys; Angela Brennen; Eloise Valcrest; Mario Arkanthos; Maestre Liniu Ganniux</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Linces gigantes (200/300 muertos en Strahnbrad). Fortalezas Las Tres Hermanas. Reclutamiento masivo</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Libertad religiosa. Pasillos Llameantes (Llama). Santo Fuego prohibido</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Cassius acude a Lagerfreuer para velar el cuerpo de Lord Esmeril Brennen. Las fortalezas de la Hermana Menor continúan sus ampliaciones con túneles hacia las montañas para almacenar tropas y suministros.</span></div>
+<div class="evento"><span class="fecha">Oct 574</span><span class="desc">Brote de viruela en Myrann: Cassius impone cuarentena y toque de queda. Apoyo militar a la alianza Brennen en la batalla por Las Tres Hermanas. Preparativos defensivos ante la escalada del conflicto.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">Batalla por Las Tres Hermanas: las fortalezas Miranthys son atacadas. Alianza con Brennen contra las fuerzas de Stagger. Tácticas de guerrilla en el lago. Exportación de mithril continúa.</span></div>
+<div class="evento"><span class="fecha">Jun 574</span><span class="desc">Cassius, como Consejero de Eventos, organiza una caravana real para registrar las fiestas locales de todo el reino.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Finalizan Las Tres Hermanas. Inicia construcción de Freiheit en El Quebrado. Finalizan los Pasillos Llameantes. Estalla la crisis del Santo Fuego: capilla quemada, Mario Arkanthos torturado, leyes draconianas. El Príncipe Kuno condena la persecución.</span></div>
+<div class="evento"><span class="fecha">Feb-Abr 574</span><span class="desc">Cassius ejecuta la emboscada de Strahnbrad con linces y trampas. El Quebrado florece con 3.000 colonos y minas de mithril. Se descubre mithril en las montañas.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Cassius escribe a Lord Menethil condenando la masacre. Los linces Miranthys participan en la Batalla de las Mil Colinas (200 de 300 mueren). Informa al Consejo de la victoria.</span></div>
+</div>`
+  },
+  {
+    id: "kolbeck",
+    name: "Casa Kolbeck",
+    content: `<h3>Casa Kolbeck — El Señorío del Lago</h3>
+<p><b>Lord Jack Kolbeck</b>, Consejero de Diplomacia, ha sido el gran mediador del reino: su intervención evitó la guerra entre Stagger y Vallend durante la crisis de las Hinterlands. Ha gestionado relaciones exteriores con Gilneas, organizó un torneo de justas con aprobación real, y autorizó a la Orden de Kalle como organización religiosa de la Dama a cambio de entrenar magos duelistas. En la guerra contra Stromgarde, Kolbeck fue asignado al Grupo A en la Baronía Miranthys. Su hijo <b>Wren Kolbeck</b>, casado con Amalia Prestor, viajó a Dalaran como embajador de Alterac para iniciar tratos diplomáticos y estudiar las artes arcanas. Wren mostró gran interés por la magia tras ver a un soldado enemigo congelado en el hielo. Su hermano menor <b>Lars Kolbeck</b> es más impulsivo: encontró un retrato del Santo Fuego arrastrado por el lago y lo llevó ante el Sagrado Ardor, desatando tensiones con Brennen. <b>Winter Kolbeck</b> entrena como duelista bajo la Orden de Kalle. Jack fue nombrado Conde por colonizar islas bárbaras en el lago Lordamere y expandir el señorío.</p>
+<p>La Casa Kolbeck profesa la fe de la <b>Dama del Lago</b>. Lady Elsa Kolbeck, firme devota, detuvo a 50 misioneros de la Llama en la frontera y los expulsó de vuelta, generando un tenso intercambio con Angela Brennen. Cincuenta mercaderes de manzanas comenzaron a predicar la Llama en tierras Kolbeck, regalando fruta a cambio de audiencia; los lugareños respondieron lanzándoles manzanas mordidas. Fenómenos extraños ocurren en sus tierras: una misteriosa figura femenina de hielo con cascabeles aparece cada noche silenciando a los predicadores de la Llama. <b>Edward Veridia</b>, de pelo blanco desde nacimiento —considerado una señal de haber sido bendecido por la Dama— fue nombrado Arzobisbo de la Dama del Lago el 18 de mayo en Vellamo, el nuevo pueblo reconstruido a orillas del lago Lordamere tras la ventisca Avalon que arrasó las aldeas anteriores. Vellamo cuenta con un altar con una estatua velada de la Dama que se adentra en el lago. El campeón de Kolbeck es Sir Olaf Björnskog, un norteño salvado por Lars que juró lealtad a la casa.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Jack Kolbeck, Barón del Señorío Kolbeck y Consejero de Diplomacia</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Vellamo, a orillas del lago Lordamere</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Señorío del Lago (alrededor del Lago Lordamere), Vellamo</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Jack Kolbeck; Wren Kolbeck; Lady Elsa Kolbeck; Lars Kolbeck; Edward Veridia (Arzobispo)</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Dama del Lago — Edward Veridia nombrado Arzobispo el 18 de mayo</span></div>
+<div class="info-row"><span class="info-label">Fenómenos</span><span class="info-value">Mujer de hielo con cascabeles silencia a predicadores de la Llama</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Torneo de la Casa Kolbeck: Lina Perenolde da la sorpresa derrotando a Sir Othmar. El comercio marítimo continúa a pesar de las tensiones generales.</span></div>
+<div class="evento"><span class="fecha">Sep 574</span><span class="desc">La Casa Othmar propone matrimonio entre Sir Saskia Othmar y Sir Mateo Ayamonte. Kolbeck media en las crecientes tensiones entre las grandes casas. Wren Kolbeck profundiza sus contactos diplomáticos en Dalaran.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Inauguración de Vellamo con altar a la Dama del Lago. Boda de Wren Kolbeck y Amalia Prestor. Edward Veridia es nombrado Arzobispo. Jack Kolbeck media con éxito en la crisis Vallend-Stagger.</span></div>
+<div class="evento"><span class="fecha">Feb 574</span><span class="desc">Lady Elsa Kolbeck detiene a 50 misioneros de la Llama en la frontera. Cincuenta mercaderes de manzanas aparecen predicando la Llama, regalando fruta a cambio de audiencia.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Las fuerzas Kolbeck no llegan a tiempo a la Batalla de las Mil Colinas por los caminos en mal estado.</span></div>
+</div>`
+  },
+  {
+    id: "ayamonte",
+    name: "Casa Ayamonte",
+    content: `<h3>Casa Ayamonte — Isla del Purgatorio</h3>
+<p><b>Lord Fernando Guillermo Ayamonte</b> rompió con el aislacionismo de su padre, el Barón Guillermo, que nunca dejó salir a sus hijos de la isla "porque más allá de los acantilados no hay nada que descubrir". Fernando denunció esas políticas como perjudiciales y, al asumir, aceptó el puesto en el Consejo Real que el Rey Soren le ofreció —honor que no recaía en un Ayamonte desde hacía generaciones. La isla, un bastión rocoso de acantilados, arrecifes y fortificaciones con enormes ballestas, es prácticamente inexpugnable por naturaleza. Durante su viaje al continente, Fernando fue interceptado por Inarus Stagger en el camino real; Stagger le ofreció una alianza que Fernando aceptó con cautela, maldiciendo internamente su mala suerte por toparse con un hombre tan poderoso. Al enterarse de las tensiones entre casas, canceló su asistencia al torneo y se desvió a la capital. La isla sufrió un brutal ataque de la Casa Velamarov de Stromgarde, la Batalla de los Percebes: tres shirdal (bestias aladas) y los barcos incendiarios de la Casa Othmar inclinaron la balanza, pero la isla perdió un cuarto de su ejército. Los tres hermanos Ayamonte se reunieron en privado con el Pontífice Theodosius II antes de que zarpara.</p>
+<p>Fernando aseguró un tratado comercial con la Casa Erlgadin para importar cereal, intercambió minerales con Miranthys a cambio de sardinas ahumadas, y utiliza las ganancias para reparar su flota pesquera. Los <b>Clérigos del Purgatorio</b> —vestidos con túnicas marrones adornos marinos y símbolos de la Luz— lucharon contra el "pastor de muertos" en el Pantano Crepitante junto a la Orden Templaria, y apoyaron en la curación de heridos tras la invasión. El Príncipe Kuno predicó la Llama en la isla con una exhibición de fuego que el pueblo tomó por milagro, causando incomodidad entre los devotos de la Luz; Fernando lo desestimó con firmeza: "La Isla del Purgatorio es un bastión de la Luz, la Llama no encontrará lugar entre la mar y la sal." Su hermano <b>Mateo Ayamonte</b> defiende la isla en su ausencia; es cortejado por Sir Saskia Othmar, que lo reta a entrenamientos diarios de esgrima. Su hermano menor <b>Eduardo Ayamonte</b> mantiene correspondencia amistosa con Lord Edward Odseer. La Casa Ayamonte tiene una tradición de regalar pendientes de ancla de plata como símbolo de buena suerte. Fernando fue nombrado Lord Almirante de Alterac y Gran Maestre de los Templarios.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Fernando Guillermo Ayamonte, Barón de la Isla del Purgatorio</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Fortaleza de la Isla del Purgatorio</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Isla del Purgatorio (costa de La Marca). Rocosa, aislada. Economía: pesca</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Fernando Ayamonte; Canciller Augusto Salvador; Obispo Isidoro; Eduardo Ayamonte</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Escaso — depende de flota pesquera y Clérigos del Purgatorio</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Luz Sagrada — Clérigos del Purgatorio (túnicas marrones con adornos marinos)</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">Fernando se mantiene en la capital siguiendo los acontecimientos. Se abstiene en la votación para Mano del Rey. Los Clérigos del Purgatorio continúan su labor. Fernando agradece a Leiv Perenolde y anuncia que una torre llevará el nombre de Strahnbrad. Se negocia la propuesta de matrimonio Othmar-Ayamonte.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Se anuncia la muerte del Barón Guillermo. El Rey ofrece a Fernando un puesto en el Consejo; acepta. Intercambio de condolencias con Vallend, Stagger, Miranthys y Brennen. Llega el Decreto Real. Fernando embarca, se encuentra con Stagger y acepta una alianza. El Canciller declara la neutralidad. Fernando cancela el torneo y se desvía a la capital. Los Clérigos luchan contra el "pastor de muertos".</span></div>
+<div class="evento"><span class="fecha">~Abr 574</span><span class="desc">Fallece el Barón Guillermo. Fernando asume el liderazgo, rompiendo el aislacionismo familiar.</span></div>
+</div>`
+  },
+  {
+    id: "montrose",
+    name: "Casa Montrose",
+    content: `<h3>Casa Montrose — La Riera del Throndil</h3>
+<p>La Casa Montrose fue derrotada en la Guerra Civil por el Ejército del Fuego en la sangrienta Batalla de Sherwuld. Lord Alistair Montrose defendió sus cinco trincheras con 1.400 hombres contra 4.000 Brennen; su hijo Sir Lanzolt cayó en duelo singular contra Angela Brennen cuando la espada de ella ardió en llamas. Alistair aceptó los términos de rendición —renunciar en favor de su hija Marianne, permitir dos semanas de ocupación Brennen y la construcción de templos de la Llama— pero Angela lo ejecutó junto a su esposa Bernice a pesar de haberles prometido un peregrinaje a Ventormenta. La nueva cabeza es <b>Lady Marianne Montrose</b>, puesta bajo tutela Brennen, una joven gobernante que intenta reconstruir lo que queda. Cientos de clérigos de la Luz partieron de la Riera hacia Lindhaven tras la derrota. En Sherwuld se inauguró la Capilla de Stefon el Tenaz, dedicada a Stefon Brennen (martirizado en la guerra), una imponente estructura de piedra negra y vidrieras rojas que duplica el tamaño de la ermita de Cyneric el Piadoso, a apenas doscientos metros. Los fieles de la Luz intentaron boicotear la inauguración, pero los guardias Montrose y los Penitentes contuvieron las protestas. El gobierno Montrose donó víveres a la Real Fundación del Príncipe.</p>
+<p>Marianne ha iniciado la construcción de tres fortalezas defensivas con mano firme, potenciado la pesca en la Riera y devuelto territorios a Ravenholdt. La casa se ha alineado con Brennen, enviando primero 30 y luego 100 ballesteros a las Hinterlands en apoyo a Vallend. Las aldeas de Keld y Arkaley fueron incendiadas por un ejército misterioso, sembrando el pánico en la Riera. En la guerra contra Stromgarde, Montrose fue asignado al Grupo E en Escudo de la Llama junto a Brennen y Stanton. Sir Klemont Montrose, hijo de la casa, sigue desaparecido desde la guerra civil, y su paradero es desconocido. A pesar de la derrota y la ocupación, la Casa Montrose se mantiene como entidad noble bajo la tutela Brennen, con la pesca y la lealtad como únicas herramientas de supervivencia.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lady Marianne Montrose (bajo tutela Brennen)</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Sherwuld, en la Riera del Throndil</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Riera del Throndil (lagos y ríos). En reconstrucción tras la guerra</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lady Marianne Montrose; Lord Alistair (ejecutado); Lady Bernice (ejecutada); Sir Lanzolt (caído); Sir Klemont (desaparecido)</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Diezmado — en reconstrucción. Ballesteros enviados a Vallend</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Llama Primigenia — Capilla de Stefon el Tenaz en Sherwuld</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">Marianne continúa la reconstrucción mientras se recrudece la crisis del norte. Las tres fortalezas defensivas avanzan lentamente. 100 ballesteros Montrose permanecen en Hinterlands. Alineamiento con la alianza Brennen-Vallend.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Inauguración de la Capilla de Stefon el Tenaz en Sherwuld. Marianne inicia la construcción de tres fortalezas y potencia la pesca. Devuelve territorios a Ravenholdt. Envía 30 ballesteros (luego 100) a Hinterlands en apoyo a Vallend.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Batalla de Sherwuld: 4.000 soldados Brennen asaltan las trincheras Montrose (1.300 Brennen y 1.400 Montrose muertos). Sir Lanzolt cae ante Ángela cuya espada arde en llamas. Lord Alistair y Lady Bernice ejecutados. Lady Marianne puesta al frente bajo tutela Brennen. Sacerdotes de la Luz expulsados, la Llama se impone.</span></div>
+</div>`
+  },
+  {
+    id: "perenolde",
+    name: "Casa Perenolde",
+    content: `<h3>Casa Perenolde — El Valle del Norte</h3>
+<p>La Casa Perenolde fue aniquilada en la Guerra Civil. Madds Perenolde, que entregó Strahnbrad sin protegerla, vio cómo su ciudad quemaba dos veces —primero bajo los bombardeos Vallend, luego cuando él mismo incendió las ruinas. Su ejército fue masacrado por los linces Miranthys y los bombardeos Vallend en una batalla campal en los patios del Grajo. Madds fue decapitado por su propio soldado Roy, que puso fin a la guerra. <b>Sir Leiv II Perenolde</b>, hijo menor de Harold, se proclamó legítimo señor denunciando la traición de su familia y presentó un plan de seis puntos: desmilitarización temporal, reconstrucción de "Nueva Strahnbrad" al otro lado del río, despeje de la Abadía de la Llama y cesión de territorios. Vallend financia la reconstrucción a cambio de un bastión militar y la "Pequeña Marca". Leiv completó una purga del ejército ejecutando a 64 mandos y condenando a 1.200 soldados por traición. Protestó airadamente cuando las ruinas de Strahnbrad se usaron como campo de batalla, escribiendo a Corin para que no usara "las ruinas de mi ciudad como campo de pruebas bélicas". Los refugiados esparcieron historias de horror sobre los bombardeos y los "fantasmas" que merodean entre las ruinas.</p>
+<p>Leiv ha mostrado una habilidad política notable para alguien que heredó cenizas: propuso trasladar el Torneo a las Hinterlands por las nevadas, aceptó difundir la fe de la Dama del Lago a cambio de apoyo, solicitó el cargo de Consejero de Comercio, regaló dos barcos a la Casa Ayamonte en señal de gratitud —uno rebautizado como "Juramento de Edward"— y declaró rebeldes a ciertos mercaderes confiscando sus bienes para financiar la reconstrucción. Sin embargo, su relación con otras casas es tensa: Lord Othmar lo insulta constantemente, y en una ocasión ambos señores se enzarzaron en una pelea física —Othmar le propinó un cabezazo y Leiv respondió con un puñetazo— que terminó con ambos en la enfermería. Ha entrenado 500 nuevos efectivos y solicita más reclutas al Consejo. En la guerra, Perenolde fue asignado al Grupo C en Lanza del Cuervo. La Real Fundación del Príncipe visitó el Señorío en su gira humanitaria, llevando algo de esperanza a un valle devastado.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Sir Leiv II Perenolde, señor legítimo</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Fortaleza del Grajo (bajo control Vallend). Strahnbrad: "Nueva Strahnbrad" en reconstrucción</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Valle del Norte, Strahnbrad (arrasada)</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Sir Leiv II Perenolde; Madds Perenolde (traidor, decapitado); Harold Perenolde</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Desmilitarización temporal. 500 efectivos entrenados</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">En reconstrucción — ayuda a difundir la fe de la Dama del Lago</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">Leiv consolida su posición como señor legítimo. La reconstrucción de Nueva Strahnbrad avanza con piedra de las canteras Othmar. Leiv solicita formalmente el cargo de Consejero de Comercio. Regala dos barcos a la Casa Ayamonte. Declara rebeldes a ciertos mercaderes confiscando sus bienes. La crisis del norte obliga a redoblar la vigilancia en el Valle del Norte.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Inician las obras de Nueva Strahnbrad. Leiv entrena 500 nuevos efectivos y solicita más reclutas al Consejo. Acepta ayudar a difundir la fe de la Dama del Lago. Propone trasladar el Torneo a las Hinterlands por las nevadas.</span></div>
+<div class="evento"><span class="fecha">Feb-Abr 574</span><span class="desc">Leiv completa la purga del ejército: 64 mandos ejecutados, 1.200 soldados condenados por traición.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">El ejército de Madds Perenolde es masacrado en Strahnbrad. Madds es decapitado por su propio soldado Roy. La Fortaleza del Grajo cae. Leiv II se proclama señor legítimo y presenta su plan de seis puntos para la reconstrucción.</span></div>
+</div>`
+  },
+  {
+    id: "prestor",
+    name: "Casa Prestor",
+    content: `<h3>Casa Prestor — El Señorío del Este</h3>
+<p>La Casa Prestor ha mantenido un perfil bajo pero ha estado presente en acontecimientos clave. Los Prestor son una familia antigua con enemistades profundas: han sido enemigos de la Casa Stanton durante generaciones, y la entrega de Jonah Falconcrest a la Caverna Roja fue un duro golpe para sus relaciones. Lord Bail Prestor tiene una presencia magnética e hipnótica —cuando Cassius Miranthys lo visitó en Ebón, experimentó un extraño efecto hipnótico en su presencia. <b>Amalia Prestor</b> se casó con Wren Kolbeck en Vellamo en una ceremonia frente al altar de la Dama del Lago, uniendo ambas casas en un vínculo diplomático y comercial. Bail sugirió al Rey Soren que eligiera esposa, proponiendo a la princesa de Gilneas como candidata. Colaboran activamente en la extensión del Camino Real desde Lindhaven hasta el lago Lordamere, y recibieron a Elsa Freuerkrieg en su viaje hacia Dalaran. En la guerra, Prestor fue asignada al Grupo B en Coraza de Abynn junto a Vallend y Dum. Custodio Elias fue enviado a investigar la desaparición de 50 hombres de fe en tierras Prestor, aunque su misión se extendió al Señorío Kolbeck.</p>
+<p>El hecho más notable ha sido la conversión de <b>Sir Jason Prestor</b> a la Llama: tras visitar a Hans Brennen en Lagerfreuer, desapareció durante un día completo, y cuando reapareció fue bautizado en una ceremonia donde su sangre avivó las llamas de forma misteriosa, dejando atónitos a los presentes. Jason se ha vuelto un aliado cercano del Sagrado Ardor. Su conversión genera controversia entre la nobleza; algunos sospechan que sus motivos no son puramente espirituales sino políticos, buscando alinearse con la facción Brennen en ascenso. Lord Inarus Stagger invitó expresamente a los Prestor al evento de La Marca donde revelaría su proyecto secreto, lo que sugiere que Bail mantiene contactos con todas las facciones del reino. La Casa Prestor sigue siendo un actor silencioso pero estratégicamente ubicado, con vínculos que cruzan todo el espectro político y religioso de Alterac.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Bail Prestor, Señor del Señorío del Este</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Ebon</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Señorío del Este — entre Lago Lordamere y Paso del Ettin (ruta a Dalaran)</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Bail Prestor; Amalia Prestor; Sir Jason Prestor (convertido a la Llama)</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Moderado — colabora en extensión del Camino Real</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Tradicionalmente la Luz. Conversión de Jason a la Llama causa controversia</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">Lord Bail Prestor mantiene un perfil bajo en medio de la crisis. Colabora en el Camino Real y en la reconstrucción. Sugiere al Rey que elija esposa, proponiendo a la princesa de Gilneas. La conversión de Jason sigue generando controversia.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Boda de Amalia Prestor con Wren Kolbeck en Vellamo. Sir Jason Prestor visita a Hans Brennen, se convierte a la Llama y es bautizado tras desaparecer un día. Jason desaparece y reaparece; su sangre aviva las llamas. Elsa Freuerkrieg visita Ebon. Colaboración en el Camino Real.</span></div>
+</div>`
+  },
+  {
+    id: "odseer",
+    name: "Casa Odseer",
+    content: `<h3>Casa Odseer — Las Hinterlands</h3>
+<p>La Casa Odseer, una casa menor de las Hinterlands, cayó bajo control Vallend tras la boda del joven <b>Lord Edward Odseer</b> —un niño que heredó el señorío prematuramente— con <b>Lady Avery Vallend</b>, quien ejerció como Lady Regente con mano firme. Avery declaró la Llama religión oficial de las Hinterlands, prohibió celebraciones públicas de la Luz aunque permitió el culto privado, presionó a la Orden del Sauco para que se consagrara a la Llama, y cedió terrenos en la costa del lago del Río Viejo para construir un gran baluarte Vallend. Las protestas campesinas no se hicieron esperar: los agricultores, tradicionalmente devotos de la Luz, veían con recelo la presencia militar extranjera. La Orden del Sauco, que hasta entonces protegía la región, se retiró tras un acuerdo entre Adrien Valcrest y Corin Vallend. La mitad de la cosecha de las Hinterlands se perdió porque los campesinos huían aterrados ante los mercenarios de Corin Vallend que patrullaban la región. En las tierras Odseer comenzaron a aparecer carteles de la Dama del Lago, atrayendo a algunos conversos.</p>
+<p>En septiembre, Lord Edward fue secuestrado por fuerzas desconocidas, desencadenando la crisis del norte. Los controles fronterizos se intensificaron buscando pistas sobre su paradero, pero el niño señor no apareció. Eduardo Ayamonte, hermano menor del Barón Fernando, mantiene correspondencia amistosa con Edward y bautizó uno de sus barcos como "Juramento de Edward" en su honor. En noviembre, Avery fue rescatada del norte, su matrimonio con Odseer fue anulado, y se unió a Zdenek Dum, integrando a la Casa Dum como vasalla de Vallend. La Casa Odseer firmó el Estatuto de Autonomía del Norte como casa noble de la región, pero su futuro es incierto: sin Lord Edward —cuyo paradero sigue siendo desconocido— y sin la regencia de Avery, las Hinterlands han quedado huérfanas, atrapadas entre la influencia Vallend y el creciente poder de Dum. La Casa Odseer es ahora más un símbolo que una fuerza real, mientras Corin Vallend consolida su dominio absoluto en el norte.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Edward Odseer (niño), bajo regencia de Lady Avery Vallend</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Hinterlands (región de valles y granjas)</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Hinterlands — valle fértil de granjas y colinas verdes</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Edward Odseer; Lady Avery Vallend; Calix Pappas (emisario Brennen)</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Inexistente — dependen de protección Vallend</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Llama (oficial). Prohibidas celebraciones públicas de la Luz</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Nov 574</span><span class="desc">Lady Avery Vallend es rescatada del norte y su matrimonio con Lord Odseer es anulado. Se casa con Lord Zdenek Dum, integrando a la Casa Dum como vasalla de Vallend. Las Hinterlands quedan bajo la esfera Vallend-Dum. Protestas campesinas contra la presencia militar extranjera continúan.</span></div>
+<div class="evento"><span class="fecha">Sep-Oct 574</span><span class="desc">Lord Edward Odseer es secuestrado. La crisis del norte se intensifica. La Casa Odseer queda atrapada entre la influencia Vallend y la presión de la Llama. Las protestas campesinas crecen.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Boda de Lord Edward Odseer con Lady Avery Vallend. Avery se convierte en Lady Regente. Declara la Llama religión oficial. Cede terrenos para bastión Vallend. Eduardo Ayamonte escribe ofreciendo amistad a Edward. Calix Pappas visita con regalos. Protestas campesinas comienzan a organizarse.</span></div>
+</div>`
+  },
+  {
+    id: "falconcrest",
+    name: "Casa Falconcrest",
+    content: `<h3>Casa Falconcrest — Las Mil Colinas (Caída)</h3>
+<p>La Casa Falconcrest, una de las más antiguas de Alterac, centró durante generaciones sus esfuerzos en la agricultura de montaña y la defensa de las Mil Colinas. Poseen una espada sagrada ancestral, forjada con un material celestial caído del cielo, un regalo de la Luz al primero de su linaje. Fue derrotada en la Guerra Civil: Lord Reinor Falconcrest se rindió tras la sangrienta Batalla de las Mil Colinas, donde su ejército de 1.500 hombres sufrió 870 muertos frente a los mercenarios del Zafiro Azul. Sir Spencer Falconcrest fue derrotado en combate singular por Glover. Inarus Stagger entró en Lindhaven, se sentó en el trono de Reinor y colocó una corona de oro sobre su cabeza, contemplando el amanecer. El Zafiro Azul (3.500 efectivos) repartió el botín entre Othmar, Kolbeck, Miranthys y Stagger, y luego fue integrado como ejército regular de las Mil Colinas con la nueva heráldica que fusiona la cruz de la Luz con una espada. Sir Spencer Falconcrest, cargando con el honor manchado de su linaje, permanece leal a Inarus empuñando un mandoble de mithril. Inarus lo nombró Señor Regente de las Mil Colinas, y bajo su mando la región ha instaurado el servicio militar obligatorio de dos años para todos los adultos. Tras el asesinato del Arzobispo Theodosius III en la catedral de Lindhaven, se estableció un duunvirato entre Spencer y Sir Tomás Benavente bajo ley marcial.</p>
+<p><b>Sir Jonah Falconcrest</b>, heredero, fue despojado de sus títulos por orden de Inarus y enviado a la Caverna Roja —hogar ancestral de los Stanton, enemigos generacionales de los Falconcrest— donde Lord Josef Stanton lo recibió con desprecio, le arrojó un pico de acero a los pies y lo condenó a trabajar como minero forzoso en la Sima Ígnea, desde el amanecer hasta el anochecer, despojado de toda posesión salvo harapos de presidiario. Jonah insultó a los Stanton y a la Llama, y fue arrastrado a las cuevas. Cumplió 17 años en la mina, donde cientos de presos extraen minerales bajo condiciones inhumanas. Una sección de la Sima Ígnea explotó misteriosamente, con rumores de que los guardias de Stanton llevaban barriles a la zona días antes. La Casa Falconcrest ha desaparecido efectivamente como casa noble independiente, pero Spencer mantiene viva la llama de su linaje, liderando 5.000 hombres entre La Marca y Lindhaven bajo la autoridad de Stagger, esperando quizás redimir el honor de su casa.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Reinor Falconcrest (rendido, sin poder efectivo). Controlado por Inarus Stagger</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Lindhaven (tomada sin daños)</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Mil Colinas (bajo control Stagger). La Marca Rift</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Reinor (derrotado); Sir Spencer Falconcrest; Sir Jonah Falconcrest (minero forzoso); Lady Nora Falconcrest</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Zafiro Azul (3.500 mercenarios) integrado como ejército de las Mil Colinas, leal a Stagger</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">Luz — Catedral de Lindhaven</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">La Casa Falconcrest ha desaparecido como entidad independiente. Sir Spencer Falconcrest permanece leal a Inarus al mando de 3.000 soldados en La Marca y 2.000 en Lindhaven. Ley marcial declarada en Lindhaven tras el asesinato del Arzobispo. Jonah continúa su condena en la Sima Ígnea.</span></div>
+<div class="evento"><span class="fecha">May 574</span><span class="desc">Sir Jonah Falconcrest es enviado a la Sima Ígnea como minero forzoso. Lord Josef Stanton lo recibe con desprecio. Sir Spencer permanece leal a Stagger.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Batalla de las Mil Colinas: 1.500 Falconcrest contra el Zafiro Azul. Reinor se rinde. Inarus ocupa Lindhaven. El Zafiro Azul se integra como ejército regular. Corin Vallend exige la expulsión de los mercenarios sin éxito.</span></div>
+</div>`
+  },
+  {
+    id: "othmar",
+    name: "Casa Othmar",
+    content: `<h3>Casa Othmar — Los Canteros del Reino</h3>
+<p>La Casa Othmar desempeñó un papel crucial en la Guerra Civil con una de las gestas más legendarias del reino. <b>Sir Ewald Othmar</b>, hijo intermedio de la casa que se enroló como sargento por petición propia, lideró a "Los Cien de Ewald" —los últimos cien soldados en pie— tras quedar como único sargento superviviente. Pronunció un discurso inmortal: "Ya estamos muertos. El enemigo cree que estamos acabados... pero lo que no saben es que no hay nada más temido en esta tierra que un soldado que sabe que ya está muerto". Resistieron toda la noche contra 800 soldados del Cuerpo Expedicionario Gilneano hasta la llegada del Ejército Real, infligiendo más de 430 bajas. Los Cien cayeron, pero su memoria se convirtió en leyenda. <b>Lord Darrek Othmar</b>, nombrado Consejero de Hacienda y Reclutamiento, es una figura imponente y temperamental —un "orangután de los Othmar"— que llegó a entrenar personalmente al Rey Soren en combate, saltando desde un balcón al patio y golpeando al monarca múltiples veces durante las prácticas. Perdió su puesto en el Consejo pero sigue siendo uno de los instructores marciales del Rey.</p>
+<p>La casa explota canteras que proveen la piedra para las reconstrucciones del reino: Nueva Strahnbrad, Corinstadt, el Camino Real, y todos los grandes proyectos de Alterac. Inarus Stagger inició negociaciones comerciales para comprar piedra de las canteras Othmar, madera de Kolbeck y mithril de Miranthys. Othmar proporcionó apoyo táctico crucial a Ayamonte durante la defensa de la Isla del Purgatorio con tres shirdal (bestias aladas) y barcos incendiarios que inclinaron la Batalla de los Percebes. Sir Saskia Othmar, hija de Meinolf, ha sido propuesta en matrimonio a Sir Mateo Ayamonte; Saskia es una luchadora consumada que derrotó a Mateo en su primer entrenamiento, colocándole una espada de madera en el cuello, y desde entonces lo entrena a diario con feroz determinación. La Casa Othmar ha demostrado su valía en la guerra contra los gnolls en Luxtón, donde sus soldados emergieron del bosque para masacrar a las criaturas con "la crueldad de una venganza implacable", ganándose derechos sobre el botín. En la guerra, Othmar fue asignado al Grupo C en Lanza del Cuervo. Sin embargo, las tensiones con otras casas son notables: Darrek Othmar y Leiv Perenolde se enzarzaron en una pelea física —cabezazo y puñetazo— que acabó con ambos en la enfermería. El carácter orgulloso y belicoso de los Othmar es tan famoso como sus canteras.</p>
+
+<div class="info-box">
+<h3>INFORMACIÓN</h3>
+<div class="info-grid">
+<div class="info-row"><span class="info-label">Gobernante</span><span class="info-value">Lord Darrek Othmar</span></div>
+<div class="info-row"><span class="info-label">Capital</span><span class="info-value">Desconocida</span></div>
+<div class="info-row"><span class="info-label">Tierras</span><span class="info-value">Región de canteras — proveedores de piedra para todo el reino</span></div>
+<div class="info-row"><span class="info-label">Personajes</span><span class="info-value">Lord Darrek Othmar; Sir Ewald Othmar ("Los Cien de Ewald"); Sir Saskia Othmar</span></div>
+<div class="info-row"><span class="info-label">Ejército</span><span class="info-value">Pequeño — casa dedicada a cantería y construcción</span></div>
+<div class="info-row"><span class="info-label">Religión</span><span class="info-value">No especificada</span></div>
+<div class="info-row"><span class="info-label">Actividad</span><span class="info-value">Canteras — piedra para Strahnbrad, Corinstadt, Camino Real</span></div>
+</div>
+</div>
+
+<div class="cronologia-box">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA</h3>
+<div class="evento"><span class="fecha">Sep-Nov 574</span><span class="desc">La Casa Othmar continúa proveyendo piedra para las reconstrucciones del reino. Colabora activamente en Nueva Strahnbrad y el Camino Real. La propuesta de matrimonio entre Sir Saskia Othmar y Sir Mateo Ayamonte sigue en pie. Inarus Stagger mantiene negociaciones comerciales.</span></div>
+<div class="evento"><span class="fecha">Abr-May 574</span><span class="desc">Inarus Stagger inicia negociaciones comerciales con la Casa Othmar para compra de piedra. La casa colabora en la reconstrucción de Nueva Strahnbrad, Corinstadt y el Camino Real.</span></div>
+<div class="evento"><span class="fecha">Ene 574</span><span class="desc">Sir Ewald Othmar lidera a "Los Cien de Ewald" contra el Cuerpo Expedicionario Gilneano, infligiendo más de 430 bajas. La resistencia heroica pasa a la leyenda de Alterac.</span></div>
+</div>`
+  }
+];
+
+const reino = `<div class="timeline-global">
+<div class="timeline-line"></div>
+<h3>CRONOLOGÍA GENERAL — SEMANA A SEMANA</h3>
+<div class="evento"><span class="fecha">18-19 Nov 574 — Funerales y Ampliaciones</span><span class="desc">Cassius Miranthys vela el cuerpo de Lord Esmeril Brennen en Lagerfreuer; el Rey Soren acude personalmente y se reúne con Hans Brennen en el Septo de la Llama para aliviar las tensiones entre la Luz y la Llama. Las fortalezas de la Hermana Menor en Miranthys continúan sus ampliaciones con túneles hacia las montañas para almacenar tropas y suministros. Se anuncia la boda del Príncipe Kuno con Angela Brennen en el Septo de Fuego, uniendo a la Corona con la Casa Brennen en vísperas de la guerra. Últimos preparativos bélicos en todo el reino: los caminos se llenan de soldados y caravanas de suministros. Sir Spencer Falconcrest y Sir Tomás Benavente establecen el duunvirato en Lindhaven bajo ley marcial.</span></div>
+<div class="evento"><span class="fecha">14-17 Nov 574 — Consejo Real y Estrategias</span><span class="desc">Fenris Bathory asiste como invitado al Consejo Real de la Mancomunidad de Lordaeron, donde las Casas Rivendare, Garithos, Vadín y Falrevere debaten la rebelión del Pendón Negro y la creciente influencia de Stromgarde. Lord Inarus Stagger, desde su lecho de herido, coordina la estrategia dictando mensajes a la Princesa Elaine Ashbury de Gilneas y coordinando la flota con la Casa Ayamonte. Cartas enviadas a Lord Corin Vallend —nombrado Consejero del Dominio con autoridad sobre guardias, prisiones y vías— y a Lord Fernando Ayamonte con directrices militares. Movimientos diplomáticos en Ventormenta para asegurar el apoyo del reino vecino. Lord Darrek Othmar emite un furioso comunicado ordenando centrar todos los recursos en la guerra.</span></div>
+<div class="evento"><span class="fecha">11-13 Nov 574 — Diplomacia Internacional</span><span class="desc">Reuniones de alto nivel en Ventormenta sobre la situación con Stromgarde. Lordaeron ofrece mediación mientras las casas alteraquíes se preparan para rechazarla. Preparativos militares en múltiples frentes: el Grupo A (Miranthys, Kolbeck) en Las Tres Hermanas, el Grupo B (Vallend, Dum, Prestor) en Coraza de Abynn, el Grupo C (Valcrest, Perenolde, Othmar) en Lanza del Cuervo, y el Grupo E (Brennen, Montrose, Stanton) en Escudo de la Llama. La Casa Perenolde declara rebeldes a ciertos mercaderes y confisca sus bienes para financiar la reconstrucción. Leiv Perenolde consolida su posición como señor legítimo.</span></div>
+<div class="evento"><span class="fecha">7-10 Nov 574 — ¡GUERRA TOTAL!</span><span class="desc">La Casa Brennen anuncia movilización total: 9.000 carbones cruzan hacia el Muro de Fuego bajo el grito de "La Última Guerra ha comenzado". El Rey Soren decreta el reclutamiento forzoso de 3.500 soldados en todo el reino y otorga a Angela Brennen el control directo del Puente Throndil. Aprueba la unión entre Lady Avery Vallend y Lord Zdenek Dum —lo que integra a la Casa Dum como vasalla de Vallend— y establece la Baronía del Valle Esmeralda para Sir Swayer Vallend. Se crea el XII Batallón "Almogávar" liderado por Sir Tarek Mujhabiir. Ley marcial declarada en Lindhaven: la catedral es sellada y las calles patrulladas por el Zafiro Azul. El reino entra oficialmente en fase de preparación para la guerra total.</span></div>
+<div class="evento"><span class="fecha">5-6 Nov 574 — ¡ASESINATO DEL ARZOBISPO!</span><span class="desc">El Arzobispo Theodosius III es asesinado en la catedral de Lindhaven por asaltantes con emblemas de Stromgarde enviados por la Reina Karynka y el Santo Fuego. El Rey Archivald Ashbury de Gilneas resulta gravemente herido; Lord Inarus Stagger, que era el blanco principal, también resulta herido. El Rey Soren declara ley marcial en todo el reino y acusa formalmente a la Reina Karynka y a Grigor Ruskinovsky del magnicidio. Paralelamente, Lady Avery Vallend es rescatada del norte por fuerzas leales; su matrimonio con Lord Edward Odseer es anulado por la Corona. Casa Vallend y Casa Dum acuerdan la unión inmediata: Avery se casa con Zdenek Dum, integrando a la Casa Dum como vasalla de Vallend. Fiestas espontáneas en el Valle de la Disputa celebrando la muerte del Pontífice de la Luz, mientras en Lindhaven el luto oficial se extiende por la ciudad.</span></div>
+<div class="evento"><span class="fecha">1-4 Nov 574 — Crisis Religiosa y Fronteriza</span><span class="desc">El Arzobispo Theodosius III realiza un milagro sanando a una mujer moribunda en las Hinterlands; la noticia del portento se extiende por todo el reino como la pólvora, atrayendo a multitudes. Ataques fronterizos de la Casa Radu (Stromgarde): 150 alteraquíes muertos en una sola noche en la frontera este. Numerosas Casas nobles piden al Rey Soren que elija esposa para asegurar la sucesión; Lord Bail Prestor sugiere a la princesa de Gilneas. La Guardia Palatina entra en Lindhaven para proteger al Arzobispo, pero será en vano. La Casa Perenolde regala dos barcos a la Casa Ayamonte —uno rebautizado como "Juramento de Edward"— en señal de gratitud. Torneo de la Casa Kolbeck: Lina Perenolde da la sorpresa derrotando a Sir Othmar en la justas.</span></div>
+<div class="evento"><span class="fecha">31 Oct 574 — ¡FALLECE LORD ESMERIL BRENNEN!</span><span class="desc">Lord Esmeril Brennen, antiguo Mano del Rey durante años, exconsejero del Dominio y padre de Lady Angela Brennen, fallece a los 60 años de edad en su villa de Lagerfreuer, consumido por una enfermedad debilitante que él mismo describió como "un hombre de hierro roto por sus propias decisiones". Servidor leal de la Corona, dirigió espías al otro lado del Muro de Fuego y descubrió la existencia del bastardo hechicero Kuno. Su muerte deja un vacío de poder en el tablero político de Alterac y allana el camino para que Inarus Stagger consolide su posición como Mano del Rey. El Rey Soren acude personalmente a velar su cuerpo; Cassius Miranthys viaja desde Myrann para el funeral en el Septo de la Llama.</span></div>
+<div class="evento"><span class="fecha">29-31 Oct 574 — Escalada del Conflicto</span><span class="desc">Últimos preparativos para la guerra abierta entre las Casas. La tensión en el norte alcanza su punto máximo. Movimientos de tropas en todos los frentes.</span></div>
+<div class="evento"><span class="fecha">25-28 Oct 574 — Crisis en el Norte</span><span class="desc">La crisis del norte se intensifica con movimientos militares de gran escala. Las Casas se posicionan ante el conflicto. Creciente apoyo popular a Zdenek Dum en las Tierras Altas.</span></div>
+<div class="evento"><span class="fecha">21-24 Oct 574 — Tensiones Militares</span><span class="desc">Combates nocturnos en el norte. Caída de posiciones estratégicas. La Casa Vallend refuerza sus líneas mientras el Ejército Real se aproxima.</span></div>
+<div class="evento"><span class="fecha">18-20 Oct 574 — Batalla Nocturna</span><span class="desc">Batalla decisiva durante la noche. Fin del enfrentamiento armado en el norte con consecuencias para ambas partes. Reorganización de fuerzas.</span></div>
+<div class="evento"><span class="fecha">15-17 Oct 574 — Preparativos de Guerra</span><span class="desc">Preparativos de guerra en todo el reino. Movimientos en Stromgarde. La Casa Stagger maniobra políticamente. La Casa Miranthys completa sus preparativos defensivos. Crisis diplomática con Bathory.</span></div>
+<div class="evento"><span class="fecha">13-14 Oct 574 — Tensiones Diplomáticas</span><span class="desc">Intercambio de cartas entre las Casas sobre la situación del norte. Hans Brennen recibe comunicaciones. Amenazas de guerra abierta.</span></div>
+<div class="evento"><span class="fecha">8-12 Oct 574 — Escaramuzas Fronterizas</span><span class="desc">Escaramuzas en las fronteras del norte. Movimientos militares en todos los frentes. La Casa Stagger envía 5.000 soldados al norte.</span></div>
+<div class="evento"><span class="fecha">5-7 Oct 574 — Torneo de las Tierras Altas</span><span class="desc">Por fin se celebra el Torneo de las Tierras Altas. Llegan los primeros invitados: cinco combatientes notables. Durante el evento, Glover y Sir Adrien tienen un enfrentamiento en las mazmorras del castillo. El torneo se ve empañado por las crecientes tensiones políticas.</span></div>
+<div class="evento"><span class="fecha">4 Oct 574 — Caos en el Norte</span><span class="desc">Apoyo popular masivo a Zdenek Dum; campesinos llevan suministros a Bastión Dum. El Ejército Real crece a más de 15.000 soldados. En Stromgarde, la Casa Mitrovica es asediada por la Casa Slowacky. El Duque Radu acusa a Lord Esmeril Brennen de ser el dragón que atacó Stromgarde. El capitán templario Krzysztof Wisniewski desaparece en el mar; la Casa Ayamonte toma el mando de la Orden Templaria. Siete caciques tribales del Levante se someten a la Casa Earglas. El Rey Soren advierte: colaborar con Dum es traición.</span></div>
+<div class="evento"><span class="fecha">2-3 Oct 574 — ¡BASTIÓN DUM CAE!</span><span class="desc">Zdenek Dum, de la antigua dinastía norteña, toma la Fortaleza de Bastión Dum y captura al Duque Corin Vallend. Se proclama "Verdadero Rey de las Tierras Altas". El Ejército Real (10.000+) marcha hacia Bastión Dum; el Rey Soren envía un ultimátum al usurpador. Brote de viruela en Myrann; la Casa Miranthys impone cuarentena y toque de queda. La Casa Stagger declara enemiga a Casa Dum y envía 5.000 soldados al norte. La Casa Vallend rechaza la ayuda de Stagger y moviliza 4.000 hombres por su cuenta. El Comandante Rojo (Wyman Flemeric II) es presentado como líder de los Penitentes. Nueva Eliria (Casa Earglas) se convierte oficialmente en ciudad.</span></div>
+<div class="evento"><span class="fecha">1 Oct 574 — El Rey Marcha al Norte</span><span class="desc">El Rey Soren IV aparece personalmente en el norte liderando el Ejército Real tras detectarse un ejército invasor desconocido. Sir Swayer Vallend revela el paso secreto "Puerta de las Gemelas". Se pierde todo contacto con Bastión Dum. Una hechicera llamada Lilli desata una criatura de hielo que destruye por completo Villa Jokinen.</span></div>
+<div class="evento"><span class="fecha">28-30 Sep 574 — Juicio contra Stagger</span><span class="desc">Se celebra un juicio político contra Lord Inarus Stagger ante el Consejo Real. Las tensiones entre las facciones alcanzan su punto máximo. La Casa Brennen y la Casa Miranthys consolidan su alianza militar.</span></div>
+<div class="evento"><span class="fecha">25-27 Sep 574 — Batalla por las Tres Hermanas</span><span class="desc">Estalla la batalla por las fortalezas de Las Tres Hermanas en Miranthys. La alianza Brennen-Miranthys se enfrenta a las fuerzas de Stagger. Combates nocturnos con uso de tácticas de guerrilla. El conflicto se extiende a las fronteras de Stromgarde.</span></div>
+<div class="evento"><span class="fecha">22-24 Sep 574 — Crisis Fronteriza</span><span class="desc">Guerra de guerrillas entre las Casas. Tensiones maximalistas con Stromgarde. Se refuerzan las defensas del Muro de Fuego ante posibles incursiones.</span></div>
+<div class="evento"><span class="fecha">20-21 Sep 574 — Conflicto Abierto</span><span class="desc">El conflicto entre las Casas se vuelve abierto en las Mil Colinas. Invitación formal a la Casa Ayamonte para participar en la política del reino. La Casa Montrose despliega sus fuerzas.</span></div>
+<div class="evento"><span class="fecha">18-19 Sep 574 — Polarización del Reino</span><span class="desc">La crisis del norte se agrava. Las Casas se polarizan entre los leales a la Corona y los partidarios de Dum. El Septo de Fuego emite comunicados sobre la crisis religiosa.</span></div>
+<div class="evento"><span class="fecha">16-17 Sep 574 — Cambios Políticos</span><span class="desc">Lady Karolina Heldt regresa a la corte real tras su divorcio. La Colonia Frederick es arrasada por el ejército misterioso. Lord Jason Prestor se convierte oficialmente a la Llama y se vuelve aliado del Sagrado Ardor (Hans Brennen). La Casa Othmar propone matrimonio entre Sir Saskia Othmar y Sir Mateo Ayamonte. Lady Angela Brennen desmoviliza 2.000 soldados pero mantiene 6.000 en el Muro de Fuego.</span></div>
+<div class="evento"><span class="fecha">14-15 Sep 574 — Nuevos Actores Políticos</span><span class="desc">El Arzobispo Theodosius III zarpa hacia Alterac, curioso por la religión de la Llama. El Rey Soren anuncia la adhesión de dos nuevas Casas vasallas: Barov y Bathory. La mitad de la cosecha de las Hinterlands se pierde por las inclemencias. El Camino Real se completa en las Mil Colinas; La Marca se consolida como centro comercial. Los pueblos de Keld y Arkaley en la Riera del Throndil son incendiados por un ejército desconocido. Lord Leiv Perenolde solicita formalmente el cargo de Consejero de Comercio. Lord Inarus Stagger impone aranceles a las Tierras Altas desatando tensiones. Lord Edward Odseer es secuestrado. Crisis económica por la extracción de mithril enano en el Quebrado.</span></div>
+<div class="evento"><span class="fecha">26-28 Jun 574 — Fin de Junio</span><span class="desc">Últimos acontecimientos del mes. Continúan los preparativos para la respuesta a la crisis de Stromgarde. La tensión no disminuye en las fronteras.</span></div>
+<div class="evento"><span class="fecha">23-25 Jun 574 — Tensiones Persisten</span><span class="desc">Continuación de las tensiones entre las Casas. Preparativos militares en diversos frentes del reino. El Consejo debate la respuesta a Stromgarde.</span></div>
+<div class="evento"><span class="fecha">18-22 Jun 574 — Semana de Crisis</span><span class="desc">Disputas políticas entre las grandes Casas. La situación en la frontera este se complica. Los servicios de inteligencia reportan movimientos sospechosos en Stromgarde.</span></div>
+<div class="evento"><span class="fecha">14-17 Jun 574 — La Marcha sobre Stromgarde</span><span class="desc">El ejército golpista stromgardiano es derrotado por las fuerzas lealistas de la Casa Radu. Aleksandr Kornilov se retira con los bogatyr supervivientes. Casi 200 prisioneros esperan juicio en la Ciudad de Strom. El Santo Fuego exige mano dura contra los traidores. Paralelamente, Lord Fernando Ayamonte agradece a Leiv Perenolde su ayuda y anuncia que una torre llevará el nombre de Strahnbrad. Lady Angela Brennen y el Príncipe Kuno contemplan la devastación desde el Muro de Fuego.</span></div>
+<div class="evento"><span class="fecha">12-13 Jun 574 — Stagger Mano del Rey</span><span class="desc">Comienza la Marcha sobre Stromgarde. Lord Inarus Stagger es nombrado oficialmente Mano del Rey. Emite su primer comunicado oficial: envía suministros a las Casas Brennen y Ayamonte, insta a la unidad del reino y aboga por la cautela respecto a Stromgarde. El Príncipe Kuno Heldt llega a la Puerta de Heldt al borde del colapso emocional, queriendo rescatar a los cautivos al otro lado del muro. Lady Angela lo encuentra y lo convence de regresar a Lagerfreuer.</span></div>
+<div class="evento"><span class="fecha">8-11 Jun 574 — Preparativos de la Marcha</span><span class="desc">Glover es formalmente investido como Caballero de la Orden del Sauco en una ceremonia en Entrerríos. Se intensifican los preparativos para la respuesta armada a Stromgarde. Lord Corin Vallend y Lord Inarus Stagger coordinan sus fuerzas ante la inminente amenaza.</span></div>
+<div class="evento"><span class="fecha">4-7 Jun 574 — Propuesta de Mano del Rey</span><span class="desc">Lord Corin Vallend propone a Lord Inarus Stagger como candidato a Mano del Rey. Las Casas Kolbeck, Miranthys y la Corona respaldan la propuesta. La Casa Ayamonte se abstiene. Lord Vallend explica su decisión a Lady Angela Brennen en una carta privada. El Gran Arzobispo Julianus III anuncia su peregrinaje a Alterac, invitado por el Rey. La Casa Brennen protesta por la exclusión del Sagrado Ardor del torneo. Tropas Vallend comienzan a patrullar las Hinterlands.</span></div>
+<div class="evento"><span class="fecha">1-3 Jun 574 — Retrasos y Preparativos</span><span class="desc">El Torneo de las Tierras Altas se retrasa aún más por el mal clima. Cassius Miranthys, como Consejero de Eventos, organiza una caravana real para registrar las fiestas locales del reino. Se anuncia la visita del Gran Arzobispo Julianus III.</span></div>
+<div class="evento"><span class="fecha">30-31 May 574 — Preparativos del Torneo</span><span class="desc">El Torneo de las Tierras Altas se retrasa por fuertes nevadas. Los organizadores doblan los salarios para acelerar. Leiv propone trasladarlo a las Hinterlands. Los Clérigos del Purgatorio y los Templarios se enfrentan al "pastor de muertos" en el Pantano Crepitante. Campesinos de Hinterlands protestan contra la presencia militar Vallend.</span></div>
+<div class="evento"><span class="fecha">28-29 May 574 — Explosión del Santo Fuego</span><span class="desc">El Rey de Gilneas confirma la visita de la Princesa Elaine-Katherine al Torneo. Estalla la crisis en Miranthys: la capilla del Santo Fuego arde, los devotos son masacrados tras dejar ciego a un sacerdote de la Llama. Mario Arkanthos es torturado y encerrado con la lengua cortada. El Príncipe Kuno condena la persecución. Sir Jason Prestor es bautizado en la Llama.</span></div>
+<div class="evento"><span class="fecha">25-27 May 574 — Resolución Diplomática</span><span class="desc">La mediación de Kolbeck tiene éxito: el fuerte Vallend se reubicará tierra adentro. Las tropas se retiran. La paz vuelve al reino. Inarus retira el bloqueo naval. Se descubre un contrabandista con un cuadro del Santo Fuego conectado con la Casa Kolbeck. Fernando Ayamonte cancela su viaje al torneo y se dirige a la capital.</span></div>
+<div class="evento"><span class="fecha">23-25 May 574 — Crisis Vallend-Stagger</span><span class="desc">Bloqueo naval de Stagger sobre el río. Corin moviliza 3.000, luego 7.500 soldados al mando del Coronel von Stein, el extremista que quemó Strahnbrad. Angela envía 2.000 soldados a Hinterlands. Intercambio de amenazas entre Stagger y Brennen. Lord Kolbeck ofrece mediación diplomática para evitar la guerra civil.</span></div>
+<div class="evento"><span class="fecha">21-22 May 574 — Crisis Religiosa en Miranthys</span><span class="desc">Cassius permite el culto al Santo Fuego con condiciones. Angela presiona para erradicarlo y establece "la red" de tres controles fronterizos. Inarus se encuentra con Lord Ayamonte en el camino real. La Orden del Sauco y Corin Vallend llegan a un acuerdo: la orden se retira de Hinterlands a cambio de expansión al sur.</span></div>
+<div class="evento"><span class="fecha">18-20 May 574 — Religión y Política</span><span class="desc">Edward Veridia es nombrado Arzobispo de la Dama del Lago en Vellamo. Leiv Perenolde completa la purga: 64 mandos ejecutados y 1.200 soldados condenados. La Orden del Sauco solicita expansión de tierras. Lady Avery Odseer declara la Llama como religión oficial de las Hinterlands y da un ultimátum a la Orden del Sauco. Fernando Ayamonte embarca hacia el continente.</span></div>
+<div class="evento"><span class="fecha">17 May 574 — Decreto Real y Tensiones</span><span class="desc">Decreto Real: subida de impuestos del 10%, aumento de levas, construcción de Freiheit en el Quebrado, extensión del Camino Real. Inarus se postula para Mano del Rey. Sir Jason Prestor visita a Hans Brennen en Lagerfreuer. Angela invita al Príncipe Kuno. Boda Odseer-Vallend: las Hinterlands pasan a la esfera Vallend.</span></div>
+<div class="evento"><span class="fecha">16 May 574 — Alianzas y Movimientos</span><span class="desc">El Rey Soren ofrece un puesto en el Consejo Real a la Casa Ayamonte. Se crea la Real Fundación del Príncipe, que viaja por decenas de aldeas. Boda de Wren Kolbeck y Amalia Prestor en Vellamo. Finalizan Las Tres Hermanas, fortalezas Miranthys en el lago. Glover llega a Entrerríos para recibir clases de caballería de Adrien Valcrest. La Casa Miranthys exporta mithril y avanza el túnel enano hacia tierras Montrose.</span></div>
+<div class="evento"><span class="fecha">15 May 574 — Llegada de la Primavera</span><span class="desc">El Rey Soren se recupera de su enfermedad. Cosechas abundantes gracias a las lluvias. Prosperidad económica en todo el reino. Se anuncia el Torneo de las Tierras Altas y la llegada de la Princesa de Gilneas. Fallece el Barón Guillermo Ayamonte; su hijo Fernando asume y rompe el aislacionismo. Se inaugura la Capilla de Stefon el Tenaz en Sherwuld, primera de la Llama en la Riera. Lord Inarus Stagger refuerza La Marca con 1.000 soldados más. El Custodio Elias es enviado a investigar la desaparición de 50 hombres de fe en tierras Kolbeck.</span></div>
+<div class="evento"><span class="fecha">14 Mar-14 Abr 574 — Tensiones Religiosas</span><span class="desc">Aumentan las tensiones entre los fieles de la Luz y la Llama en múltiples frentes. Lord Cassius Miranthys negocia con Mario Arkanthos, quien ha regresado de Stromgarde convertido al Santo Fuego. La influencia del Santo Fuego Grigor Ruskinovsky crece al otro lado del Muro. La Casa Miranthys permite el culto al Santo Fuego con condiciones, generando controversia con la Casa Brennen. Lady Jaspe inicia estudios de magia en Dalaran donde coincide con el Architejerrunas Kromur. Lord Kaminski es ejecutado por la Casa Radu bajo cargos de traición por no alinearse con la reina stromgardiana.</span></div>
+<div class="evento"><span class="fecha">1-13 Mar 574 — Ofensiva Religiosa y Debate Político</span><span class="desc">Mario Arkanthos predica activamente el Santo Fuego en Miranthys, ganando seguidores. La elección del Sumo Sacerdote de la Llama se intensifica con cuatro candidatos: Hans Brennen (16 años, pupilo de Wyman Flemeric, centralista), Jorgen Heraldsen (cercano al pueblo, aperturista), Telfor del Rio Viejo (pescador, apoyado por Vallend) y Calix Pappas (predicador de montaña, expansionista guerrerista). Las tensiones entre la Luz y la Llama se agravan. El Gran Maestre de la Orden del Sauco es asesinado por tropas de Stagger en un confuso incidente en el lago. Se descubre mithril en las montañas del Quebrado, atrayendo intereses económicos de todo el reino. El consejo debate la inclusión de nuevas Casas.</span></div>
+<div class="evento"><span class="fecha">12-29 Feb 574 — Crisis de la Orden del Sauco</span><span class="desc">Sir Adrien Valcrest invoca la antigua ley de herencia Principia Equitum y reclama el control de la Orden del Sauco tras la muerte del Gran Maestre. La Casa Valcrest asume el control directo de la orden, provocando protestas de Hans Brennen y Lady Angela Brennen, que acusan a Valcrest de usurpación. La Consejera de Justicia respalda a Valcrest amparándose en la legalidad. Paralelamente, se descubre la existencia del bastardo hechicero Kuno, hijo del Rey Zorislav de Stromgarde. Grigor Ruskinovsky se autoproclama sucesor de Wyman Flemeric. El Duque Radu lanza panfletos desde catapultas sobre las tropas Brennen promoviendo la doctrina del Santo Fuego.</span></div>
+<div class="evento"><span class="fecha">4-11 Feb 574 — Embajada de Mario Arkanthos</span><span class="desc">El emisario Mario Arkanthos regresa de Stromgarde como converso al Santo Fuego de Grigor Ruskinovsky. Es acogido en Miranthys donde es interrogado pero tratado con cortesía. Las noticias de la guerra civil llegan a la Ciudad de Alterac a través de los refugiados, que relatan el horror de la quema de Strahnbrad. Los sacerdotes de la Llama expulsados de las Mil Colinas se refugian en tierras Prestor. Otros 50 sacerdotes de la Llama desaparecen misteriosamente. Se anuncia la muerte de Madds Perenolde: ¡la guerra civil ha terminado! Grandes festividades en todo el Valle de la Disputa.</span></div>
+<div class="evento"><span class="fecha">1-3 Feb 574 — El Quebrado y Tensiones Políticas</span><span class="desc">Los soldados Vallend abandonan Strahnbrad para asediar la Fortaleza del Grajo. Cassius Miranthys recibe órdenes de Lord Corin Vallend: tender una emboscada con 400 hombres y linces gigantes contra el ejército Perenolde (4.000) en las ruinas de Strahnbrad. Los sacerdotes de la Llama son detenidos en la frontera Kolbeck por Lady Elsa Kolbeck, que no permite misiones proselitistas en tierras de la Dama del Lago. Cincuenta mercaderes de manzanas comienzan a predicar la Llama en el señorío Kolbeck, regalando fruta a cambio de audiencia. Leiv Perenolde protesta por el uso de las ruinas de Strahnbrad como campo de batalla.</span></div>
+<div class="evento"><span class="fecha">25-31 Ene 574 — Pospuerra y Amenaza de Stromgarde</span><span class="desc">Carta anónima desde Stromgarde advierte de un ataque inminente de los señores Gdansk y Varsov. El Rey Soren moviliza el ERSM (5.570 efectivos) hacia el Muro de Fuego. Ángela Brennen cierra la Puerta Heldt y despliega 5.000 soldados. Inarus recibe protección real. El Zafiro Azul se integra como ejército regular. Los Cien de Ewald se convierten en leyenda tras resistir toda la noche a 800 gilneanos. Asesinato del Rey Zorislav II de Stromgarde. La Reina Karynka asume el trono. Ritterburg es renombrada Corinstadt. Leiv Perenolde se proclama señor legítimo. Sir Jonah Falconcrest es enviado a la Sima Ígnea como minero forzoso. El Quebrado florece con 3.000 colonos.</span></div>
+<div class="evento"><span class="fecha">21-24 Ene 574 — Fase Final Guerra Civil</span><span class="desc">El ejército Vallend entra en Strahnbrad en ruinas. Batalla de las Mil Colinas: Inarus Stagger y el Zafiro Azul derrotan a los Falconcrest con 1.870 muertos totales. Batalla de Sherwuld: Ángela Brennen asalta las cinco trincheras Montrose, su espada se enciende en llamas. Caen Lindhaven y Sherwuld. Alistair y Bernice Montrose son ejecutados por ballesteros Brennen. Madds Perenolde es decapitado por su propio soldado Roy. Fin de la Guerra Civil. Una carta desde Lordaeron expresa condolencias por la destrucción de Strahnbrad. Cassius Miranthys escribe a Lord Menethil reafirmando su lealtad a la Corona.</span></div>
+</div>
+
+<div class="separator">~ ~ ~</div>
+
+<h3>RESUMEN GENERAL</h3>
+<p><b>Alterac</b> ha emergido de una devastadora guerra civil que ha dejado cicatrices profundas en todo el reino. La guerra, que enfrentó a los lealistas contra los rebeldes de las Casas Perenolde, Montrose y Falconcrest, culminó con la victoria de la Corona en la Batalla del Grajo, donde Madds Perenolde fue decapitado por uno de sus propios soldados. Sin embargo, la paz ha sido frágil y el reino se encuentra ahora al borde de una guerra total contra Stromgarde.</p>
+
+<p>La primavera trajo abundancia a los campos alteraquí, con cosechas récord, pero el verano y el otoño han traído vientos de guerra. La economía, que mostraba signos de recuperación, se ha visto forzada a un rearme acelerado. El Rey Soren IV decretó el aumento de levas y una subida de impuestos del 10%, y tras la crisis de noviembre ha ordenado el reclutamiento forzoso de 3.500 soldados. La Real Fundación del Príncipe Kuno lleva ayuda humanitaria a las aldeas, ganando un enorme apoyo popular.</p>
+
+<p>Las tensiones internas han ido <b>in crescendo</b>. La crisis Vallend-Stagger por las Hinterlands se resolvió diplomáticamente, pero la desconfianza entre las grandes casas se mantuvo. En septiembre estalló la batalla por Las Tres Hermanas entre la alianza Brennen-Miranthys y Stagger. En octubre, la supuesta invasión de Zdenek Dum sacudió el norte: capturó Bastión Dum y al Duque Corin Vallend, proclamándose Rey de las Tierras Altas. Sin embargo, el desenlace reveló que todo fue una maniobra de Vallend: Dum, exiliado durante generaciones, recuperó las Tierras Altas como casa vasalla de Corin, que consolidó su poder absoluto en el norte al anexionar a la antigua dinastía. La unión de Avery con Dum selló el pacto, asegurando a Vallend lealtad y alimento para sus ejércitos.</p>
+
+<p>Religiosamente, el reino está más dividido que nunca. Hans Brennen, de 16 años, fue elegido Sumo Sacerdote de la Llama tras una reñida elección en febrero. La crisis del Santo Fuego en Miranthys dejó un reguero de sangre, con Mario Arkanthos torturado y la capilla quemada. El Arzobispo Theodosius III de Ventormenta llegó a Alterac, realizó un milagro en las Hinterlands, y fue asesinado en Lindhaven en noviembre, un acto atribuido a Stromgarde que ha desencadenado la crisis definitiva.</p>
+
+<p>La Casa Brennen ha declarado la movilización total: 9.000 carbones marchan hacia el Muro de Fuego. Lord Inarus Stagger, investido Mano del Rey, coordina la respuesta bélica desde su lecho de herido. El Torneo de las Tierras Altas finalmente se celebró en octubre, pero la prevista visita de la Princesa Elaine-Katherine de Gilneas quedó en vilo tras el atentado contra su padre el Rey Archivald. El futuro de Alterac es incierto: la primavera de prosperidad ha dado paso al otoño de la guerra.</p>
+
+<div class="actualmente-box">
+<h3>ACTUALMENTE (Nov 574)</h3>
+<p>Alterac se encuentra al <b>borde de la guerra total</b>. El asesinato del Arzobispo Theodosius III en Lindhaven ha roto cualquier apariencia de paz con Stromgarde. La Reina Karynka y el Santo Fuego Grigor Ruskinovsky son señalados como responsables. La Casa Brennen ha movilizado 9.000 carbones hacia el Muro de Fuego declarando "La Última Guerra", y el Rey ha decretado el reclutamiento forzoso de 3.500 soldados. Se ha creado el XII Batallón "Almogávar" bajo el mando de Sir Tarek Mujhabiir. La ley marcial rige en Lindhaven bajo el duunvirato de Sir Spencer Falconcrest y Sir Tomás Benavente. En el frente diplomático, Lordaeron ofrece mediación mientras Ventormenta mantiene contactos con la Corona para definir la respuesta al magnicidio. El Rey Soren ha nombrado a Corin Vallend Consejero del Dominio y ha otorgado el control del Puente Throndil a Angela Brennen. La boda del Príncipe Kuno con Lady Angela se ha anunciado en el Septo de Fuego, uniendo a la Corona con la Casa Brennen.</p>
+<p>En el norte, la unión Vallend-Dum se ha consolidado bajo el control absoluto de Corin Vallend. Dum, ahora vasallo de Vallend, controla Bastión Dum y las Tierras Altas como administrador, mientras que el ejército Vallend garantiza la protección y Corin retiene el control total del territorio. La Baronía del Valle Esmeralda ha sido creada para Sir Swayer Vallend. Lord Inarus Stagger, herido pero aún al mando como Mano del Rey, coordina la estrategia bélica desde la capital, dividiendo el ejército en cuatro grupos: Grupo A (Miranthys-Kolbeck) en Las Tres Hermanas, Grupo B (Vallend-Dum-Prestor) en Coraza de Abynn, Grupo C (Valcrest-Perenolde-Othmar) en Lanza del Cuervo, y Grupo E (Brennen-Montrose-Stanton) en Escudo de la Llama. La flota de Ayamonte se prepara bajo la coordinación de Lord Fernando, y el Camino Real sirve como arteria logística para el despliegue masivo. Grigor Ruskinovsky extiende su influencia desde Stromgarde, y el bastardo hechicero Kuno sigue siendo una amenaza latente. El funeral de Lord Esmeril Brennen congregó a Cassius Miranthys y al Rey Soren en Lagerfreuer, donde se sellaron los últimos acuerdos antes de la tormenta. El reino ya no contiene la respiración: se prepara para la tormenta definitiva.</p>
+</div>`;
+
+const stromgarde = `<div class="stromgarde-section" style="margin-top:0">
+
+<h3>📜 La Advertencia Anónima</h3>
+<p>Todo comenzó cuando una carta anónima llegó desde la mismísima Fortaleza de Stromgarde, escrita por un informante del propio palacio de Zorislav II Aterratrols. En ella se revelaba un plan de ataque coordinado de las casas fronterizas Gdansk y Varsov contra el Muro de Fuego, aprovechando la debilidad de Alterac tras la devastadora guerra civil. La carta, manuscrita con prisas y llena de tachones, estaba firmada por alguien que arriesgaba su vida por evitar una masacre: <i>"Nadie debería hacer la guerra con tácticas tan sucias, ¡bastantes problemas tiene Alterac ya!"</i></p>
+
+<h3>⚡ La Respuesta del Halcón</h3>
+<p>El Rey Soren IV Heldt respondió con una contundencia que sorprendió a propios y extraños. Movilizó al Ejército Real de Su Majestad (ERSM), que alcanzó los <b>5.570 efectivos</b>, y los envió en una marcha forzada hacia el Muro de Fuego. Paralelamente, despachó una carta pública a Zorislav II Aterratrols en la que dejaba claro que conocía sus planes de invasión y advertía que el Halcón alteraquí respondería con <i>"afiladas garras"</i> a cualquier provocación. La misiva real no dejaba espacio para la ambigüedad: el tratado de paz debía respetarse.</p>
+
+<h3>🛡️ El Cierre de la Frontera Este</h3>
+<p>La Casa Brennen, como guardiana de la frontera este, actuó con rapidez. Lady Angela Brennen cerró inmediatamente la Puerta Heldt —el principal paso entre ambos reinos—, movilizó <b>5.000 soldados</b> hacia el Muro de Fuego y estableció un innovador sistema de seguridad conocido como <b>"la red"</b>: tres controles sucesivos en el Puente Throndil, la Cuarta Línea de Defensa Brennen y la tercera línea defensiva del Valle. Cada viajero debía portar un ticket sellado en cada control, creando un rastro imposible de falsificar. El lema propagandístico no tardó en extenderse: <i>"Si Grigor Ruskinovsky quiere pasar, quedará enredado en nuestra red."</i></p>
+
+<h3>🤝 La Respuesta de Zorislav</h3>
+<p>Zorislav II respondió con una actitud conciliadora que muchos consideraron sospechosa. Prometió paz y ofreció una visita diplomática al Muro de Fuego, asegurando que la carta anónima era obra de un impostor y que no albergaba intenciones hostiles. Los movimientos militares stromgardianos se detuvieron visiblemente, aunque sus fuerzas fronterizas permanecieron en alerta máxima. Nadie en la corte alteraqui creyó realmente en la sinceridad del Rey stromgardiano.</p>
+
+<h3>🔍 Los Secretos de la Corte Enemiga</h3>
+<p>La inteligencia alteraqui, liderada por los servicios de la Casa Brennen, descubrió información que heló la sangre de los consejeros. Zorislav II tiene un <b>hijo bastardo llamado Kuno</b>, un poderoso hechicero entrenado en las artes mágicas ancestrales más oscuras. Según los informes, este hechicero habría eliminado a cientos de trols en solitario en las fronteras del norte de Stromgarde, demostrando un poder que no se veía en la región desde hacía generaciones. El Rey de Stromgarde mantenía esta información en el más estricto secreto, y su existencia no era conocida ni por los nobles más cercanos al trono.</p>
+
+<h3>🔥 El Santo Fuego y Grigor Ruskinovsky</h3>
+<p>Al otro lado del Muro de Fuego, <b>Grigor Ruskinovsky</b>, el autoproclamado Santo Fuego, ha sido nombrado líder religioso oficial por la Corona stromgardiana. Desde su posición, ha comenzado una intensa campaña proselitista hacia Alterac, infiltrando devotos, enviando cuadros sagrados y tratando de establecer células de culto en territorio alteraqui. Su retórica incendiaria y su creciente influencia en la corte de Zorislav lo convierten en una amenaza tan peligrosa como cualquier ejército. Ruskinovsky predica un mensaje de pureza y fuego que resuena entre los stromgardianos más radicales, y su objetivo declarado es <i>"purificar"</i> Alterac con la llama de su fe.</p>
+
+<h3>💀 El Asesinato de Zorislav y la Ascensión de Karynka</h3>
+<p>En un giro inesperado de los acontecimientos, el Rey Zorislav II Aterratrols fue <b>asesinado</b> en circunstancias que aún se investigan. Su muerte, lejos de provocar el caos esperado, llevó a una tensa paz. La <b>Reina Karynka</b> asumió el trono y se vio obligada a ganarse el apoyo de los nobles locales, abandonando temporalmente las aspiraciones de conquista de su predecesor. Stromgarde se cerró <i>"a cal y canto"</i>, y apenas llegan noticias del reino vecino. Sin embargo, nadie en Alterac confía en que esta calma sea duradera.</p>
+
+<h3>⛓️ La Crisis del Santo Fuego en Miranthys</h3>
+<p>La tensión religiosa estalló con violencia en la Baronía Miranthys. Lord Cassius Miranthys, tras intentar una política de tolerancia hacia los devotos del Santo Fuego liderados por el converso <b>Mario Arkanthos</b>, vio cómo la situación se descontrolaba. Una manifestación pacífica degeneró cuando una piedra lanzada por un devoto dejó ciego de un ojo al anciano sacerdote de la Llama <b>Maestre Liniu Ganniux</b>. La turba enfurecida cargó contra los devotos: la capilla del Santo Fuego fue quemada, los fieles fueron apaleados, detenidos y en muchos casos ejecutados. Mario Arkanthos fue torturado, encerrado en las mazmorras con la lengua cortada. Cassius promulgó duras leyes que castigaban con la muerte la posesión de libros religiosos del Santo Fuego. El Príncipe Kuno intervino personalmente, escribiendo cartas condenando la persecución y defendiendo la libertad religiosa, calificando las medidas de <i>"deleznables"</i> y <i>"asquerosas"</i>.</p>
+
+<h3>🚫 El Bloqueo y la Red de Contención</h3>
+<p>La frontera este permanece cerrada. La Casa Brennen ha interceptado al menos un contrabandista que intentaba introducir un cuadro del Santo Fuego, confiscando la imagen y descubriendo conexiones con la Casa Kolbeck. Los tres controles de "la red" funcionan a pleno rendimiento, con cacheos, interrogatorios e inspecciones sistemáticas. La Casa Miranthys ha colaborado estableciendo sus propios filtros en la frontera con el Valle de la Disputa, con cincuenta guardias en cada paso. El comercio con Stromgarde está totalmente suspendido, y solo se permite el paso con permisos especiales expedidos por la Corona.</p>
+
+<h3>👁️ El Muro de Fuego Vigila</h3>
+<p>En las fortalezas del Muro de Fuego —Coraza de Abynn, Lanza del Cuervo y Escudo de la Llama— se han realizado simulacros de invasión y pruebas de artillería con munición real. Los soldados alteraquis permanecen en alerta permanente, observando el horizonte este. La amenaza no ha desaparecido, solo se ha pospuesto. Con el asesinato de Zorislav, la ascensión de la Reina Karynka, el descubrimiento del bastardo hechicero y la creciente influencia de Grigor Ruskinovsky, la paz actual tiene todos los visos de ser una simple tregua. El Halcón alteraqui mantiene sus garras afiladas, esperando el momento en que el este vuelva a rugir.</p>
+
+<h3>📌 ACTUALMENTE (Nov 574)</h3>
+<p>La situación con Stromgarde ha pasado de un <b>impás tenso</b> a una <b>crisis abierta</b>. El asesinato del Arzobispo Theodosius III en Lindhaven, obra de asaltantes con emblemas stromgardianos, ha roto cualquier apariencia de paz. La Reina Karynka se ha consolidado en el trono tras sofocar una rebelión, pero mantiene su postura hostil. La Casa Brennen ha declarado la movilización total (9.000 carbones hacia el Muro de Fuego) y el Rey Soren ha decretado el reclutamiento forzoso. La guerra es inminente.</p>
+<p>El <b>Santo Fuego Grigor Ruskinovsky</b> ha sido acusado formalmente de orquestar el magnicidio. Su influencia en la corte stromgardiana es absoluta. El bastardo hechicero <b>Kuno</b> sigue siendo una amenaza latente, aunque no se han reportado nuevos avistamientos. La "red" de la Casa Brennen opera a pleno rendimiento en los tres controles del Valle de la Disputa.</p>
+<p>En el norte, la unión Vallend-Dum ha cambiado el equilibrio de poder bajo el control absoluto de Corin Vallend. Dum es ahora un vasallo que administra las Tierras Altas mientras Vallend retiene el poder militar y territorial. El Rey ha aprobado el acuerdo, pero el reino se prepara para lo peor. El otoño de 574 será recordado como el momento en que Alterac dejó de contener la respiración y comenzó a afilar sus garras para la guerra total.</p>
+
+</div>`;
+
+const ultimos = `<p><b>Octubre — Noviembre de 574</b></p>
+
+<p>El reino ha sido sacudido por una serie de acontecimientos que han cambiado drásticamente el panorama político. El <b>asesinato del Arzobispo Theodosius III</b> en la catedral de Lindhaven, junto con las heridas del Rey Archivald Ashbury de Gilneas y Lord Inarus Stagger, ha sumido a Alterac en una crisis sin precedentes. El Rey Soren ha declarado la ley marcial y ha acusado a la Reina Karynka de Stromgarde y al Santo Fuego del magnicidio, elevando las tensiones con el reino vecino a su punto más álgido.</p>
+
+<p>En el norte, la unión entre Lady Avery Vallend y Lord Zdenek Dum ha integrado a la Casa Dum como vasalla de Vallend. Dum —que capturó Bastión Dum y al Duque Corin Vallend proclamándose "Verdadero Rey de las Tierras Altas"— ha recuperado las Tierras Altas como administrador, pero el poder real reside en Corin Vallend, que ha consolidado su dominio absoluto en el norte. El Rey Soren ha aprobado la unión y ha creado la Baronía del Valle Esmeralda para Sir Swayer Vallend, mientras el Ejército Real se prepara para la guerra.</p>
+
+<p>La <b>Casa Brennen</b> ha declarado la movilización total: 9.000 carbones cruzan hacia el Muro de Fuego en lo que llaman "La Última Guerra". El Rey ha decretado el reclutamiento forzoso de 3.500 soldados y se ha creado el XII Batallón "Almogávar". La guerra con Stromgarde parece inevitable.</p>
+
+<p>Lord Inarus Stagger, Mano del Rey, ha sido el centro de controversias: desde el juicio político en septiembre hasta su implicación en la crisis del norte. La muerte de Lord Esmeril Brennen, antiguo Mano del Rey, ha dejado un vacío de poder que Stagger ha ocupado, pero no sin generar tensiones con las demás Casas.</p>
+
+<p>El <b>Torneo de las Tierras Altas</b> finalmente se celebró en octubre, con gladiadores de todo el reino, aunque empañado por el enfrentamiento entre Glover y Sir Adrien Valcrest en las mazmorras del castillo. La llegada de la Princesa Elaine-Katherine de Gilneas, que se esperaba para sellar una alianza, se ha visto comprometida tras el atentado contra su padre el Rey Archivald.</p>
+
+<p>Religiosamente, el reino está más dividido que nunca. El milagro del Arzobispo Theodosius en las Hinterlands atrajo a multitudes antes de su asesinato. Hans Brennen, el joven Sumo Sacerdote de la Llama de 16 años, consolida su poder mientras el Santo Fuego Grigor Ruskinovsky extiende su influencia desde Stromgarde. La persecución del Santo Fuego en Miranthys y la quema de aldeas como Keld, Arkaley y la Colonia Frederick por un ejército misterioso han sembrado el pánico en las regiones fronterizas.</p>
+
+<p>El reino contiene la respiración. La calma que trajo la primavera ha dado paso a los vientos de guerra del otoño. La Mano del Rey ocupada, las fronteras ardiendo, y el trono de Alterac tambaleándose al borde de una guerra total contra Stromgarde.</p>`;
+
+const houseContents = {};
+houses.forEach(h => { houseContents[h.id] = h.content; });
+
+function renderHouses() {
+  const grid = document.getElementById('housesGrid');
+  houses.forEach(h => {
+    const btn = document.createElement('button');
+    btn.className = 'house-btn';
+    btn.textContent = h.name;
+    btn.dataset.house = h.id;
+    btn.addEventListener('click', () => selectHouse(h.id));
+    grid.appendChild(btn);
+  });
+}
+
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.top-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.house-btn').forEach(b => b.classList.remove('active'));
+  if (view === 'reino') {
+    document.getElementById('viewReino').classList.add('active');
+    document.getElementById('btnReino').classList.add('active');
+  } else if (view === 'ultimos') {
+    document.getElementById('viewUltimos').classList.add('active');
+    document.getElementById('btnUltimos').classList.add('active');
+  } else if (view === 'stromgarde') {
+    document.getElementById('viewStromgarde').classList.add('active');
+    document.getElementById('btnStromgarde').classList.add('active');
+  }
+}
+
+function selectHouse(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.top-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.house-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.house-btn[data-house="${id}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('viewCasa').classList.add('active');
+  document.getElementById('houseContent').innerHTML = houseContents[id] || '<p>Selecciona una casa.</p>';
+}
+
+document.getElementById('reinoContent').innerHTML = reino;
+document.getElementById('stromgardeContent').innerHTML = stromgarde;
+document.getElementById('ultimosContent').innerHTML = ultimos;
+
+renderHouses();
+</script>
+</body>
+</html>`
+
