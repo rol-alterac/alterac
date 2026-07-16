@@ -59,21 +59,21 @@
   }
   .top-bar {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 30px;
-    flex-wrap: wrap;
   }
   .top-btn {
     background: #1e1814;
     border: 1px solid #3a2a1a;
     color: #d4c9b8;
-    padding: 12px 24px;
+    padding: 12px 16px;
     font-family: 'Cinzel', serif;
-    font-size: 0.85em;
+    font-size: 0.82em;
     cursor: pointer;
     transition: all 0.3s;
     border-radius: 4px;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    flex: 1;
   }
   .top-btn:hover { background: #2a2018; border-color: #6b4c2a; color: #c9a86c; }
   .top-btn.active { background: #3a2a1a; border-color: #c9a86c; color: #e8d5b0; }
@@ -87,13 +87,14 @@
     background: #1e1814;
     border: 1px solid #3a2a1a;
     color: #d4c9b8;
-    padding: 14px 10px;
+    padding: 12px 16px;
     font-family: 'Cinzel', serif;
-    font-size: 0.85em;
+    font-size: 0.82em;
     cursor: pointer;
     transition: all 0.3s;
     text-align: center;
     border-radius: 4px;
+    letter-spacing: 0.5px;
   }
   .house-btn:hover { background: #2a2018; border-color: #6b4c2a; color: #c9a86c; }
   .house-btn.active { background: #3a2a1a; border-color: #c9a86c; color: #e8d5b0; }
@@ -294,6 +295,60 @@
     .top-bar { flex-direction: column; }
     .top-btn { text-align: center; }
   }
+
+  .consejo-intro {
+    font-style: italic;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.03);
+    border-left: 4px solid #8b0000;
+    border-radius: 4px;
+    line-height: 1.7;
+  }
+  .consejo-grid {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #c9a84c;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .consejo-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 1fr;
+    border-bottom: 1px solid #e0d5b8;
+    padding: 10px 16px;
+    align-items: center;
+    gap: 12px;
+  }
+  .consejo-row:last-child { border-bottom: none; }
+  .consejo-row:nth-child(even):not(.consejo-header) { background: rgba(0,0,0,0.02); }
+  .consejo-header {
+    background: linear-gradient(135deg, #2c1810, #4a2820);
+    color: #f0e6c5;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8em;
+    padding: 12px 16px;
+    border-bottom: 2px solid #c9a84c;
+  }
+  .consejo-header .consejo-rango { color: #f0e6c5; }
+  .consejo-vacante { opacity: 0.65; }
+  .consejo-vacante .consejo-titular {
+    font-style: italic;
+    color: #8b0000;
+  }
+  .consejo-rango { font-weight: 700; color: #b8945c; }
+  .consejo-titular { font-weight: 600; }
+  .consejo-nota { font-size: 0.9em; color: #666; }
+  .consejo-extra {
+    margin-top: 8px;
+    padding: 12px 20px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 6px;
+    font-size: 0.95em;
+  }
 </style>
 </head>
 <body>
@@ -309,6 +364,7 @@
   <button class="top-btn active" id="btnReino" onclick="showView('reino')">RESUMEN DEL REINO</button>
   <button class="top-btn" id="btnUltimos" onclick="showView('ultimos')">ÚLTIMOS EVENTOS</button>
   <button class="top-btn" id="btnStromgarde" onclick="showView('stromgarde')">GUERRA CONTRA STROMGARDE</button>
+  <button class="top-btn" id="btnConsejo" onclick="showView('consejo')">CONSEJO REAL</button>
 </div>
 
 <h2>Casas Nobles</h2>
@@ -327,6 +383,11 @@
 <div class="content-box view" id="viewStromgarde">
   <h2>⚔ La Guerra contra Stromgarde</h2>
   <div id="stromgardeContent"></div>
+</div>
+
+<div class="content-box view" id="viewConsejo">
+  <h2>👑 Consejo Real de Alterac</h2>
+  <div id="consejoContent"></div>
 </div>
 
 <div class="content-box view" id="viewCasa">
@@ -853,28 +914,136 @@ const stromgarde = `<div class="stromgarde-section" style="margin-top:0">
 <h3>📌 ACTUALMENTE (Nov 574)</h3>
 <p>La situación con Stromgarde ha pasado de un <b>impás tenso</b> a una <b>crisis abierta</b>. El asesinato del Arzobispo Theodosius III en Lindhaven, obra de asaltantes con emblemas stromgardianos, ha roto cualquier apariencia de paz. La Reina Karynka se ha consolidado en el trono tras sofocar una rebelión, pero mantiene su postura hostil. La Casa Brennen ha declarado la movilización total (9.000 carbones hacia el Muro de Fuego) y el Rey Soren ha decretado el reclutamiento forzoso. La guerra es inminente.</p>
 <p>El <b>Santo Fuego Grigor Ruskinovsky</b> ha sido acusado formalmente de orquestar el magnicidio. Su influencia en la corte stromgardiana es absoluta. El bastardo hechicero <b>Kuno</b> sigue siendo una amenaza latente, aunque no se han reportado nuevos avistamientos. La "red" de la Casa Brennen opera a pleno rendimiento en los tres controles del Valle de la Disputa.</p>
-<p>En el norte, la unión Vallend-Dum ha cambiado el equilibrio de poder bajo el control absoluto de Corin Vallend. Dum es ahora un vasallo que administra las Tierras Altas mientras Vallend retiene el poder militar y territorial. El Rey ha aprobado el acuerdo, pero el reino se prepara para lo peor. El otoño de 574 será recordado como el momento en que Alterac dejó de contener la respiración y comenzó a afilar sus garras para la guerra total.</p>
+<p>En el norte, la hábil maniobra de Lord Corin Vallend ha consolidado su poder absoluto. La supuesta invasión de Zdenek Dum —un exiliado de las Islas Dum— fue orquestada por Corin: fingió su propia captura para integrar a los Dum como vasallos leales que administran las Tierras Altas mientras Vallend retiene el poder militar y territorial. El matrimonio de Avery Vallend con Dum selló el pacto, asegurando alimento y lealtad para el norte. El Rey ha aprobado el acuerdo, pero el reino se prepara para lo peor. El otoño de 574 será recordado como el momento en que Alterac dejó de contener la respiración y comenzó a afilar sus garras para la guerra total.</p>
 
 </div>`;
 
-const ultimos = `<p><b>Octubre — Noviembre de 574</b></p>
+const ultimos = `<p><b>Noviembre de 574 — la tormenta se desata</b></p><p><b>Lord Esmeril Brennen</b>, antiguo Mano del Rey durante décadas, falleció el 31 de octubre a los 60 años.</p>
 
-<p>El reino ha sido sacudido por una serie de acontecimientos que han cambiado drásticamente el panorama político. El <b>asesinato del Arzobispo Theodosius III</b> en la catedral de Lindhaven, junto con las heridas del Rey Archivald Ashbury de Gilneas y Lord Inarus Stagger, ha sumido a Alterac en una crisis sin precedentes. El Rey Soren ha declarado la ley marcial y ha acusado a la Reina Karynka de Stromgarde y al Santo Fuego del magnicidio, elevando las tensiones con el reino vecino a su punto más álgido.</p>
+<p>El <b>asesinato del Arzobispo Theodosius III</b> en la catedral de Lindhaven ha roto el impás. El Rey Archivald Ashbury de Gilneas yace al borde de la muerte —los médicos debaten amputarle el brazo— y Lord Inarus Stagger resultó gravemente herido al ser el blanco principal. El Rey Soren ha declarado la ley marcial, acusado a la Reina Karynka y al Santo Fuego del magnicidio, y el reino entero se moviliza para la guerra total contra Stromgarde.</p>
 
-<p>En el norte, la unión entre Lady Avery Vallend y Lord Zdenek Dum ha integrado a la Casa Dum como vasalla de Vallend. Dum —que capturó Bastión Dum y al Duque Corin Vallend proclamándose "Verdadero Rey de las Tierras Altas"— ha recuperado las Tierras Altas como administrador, pero el poder real reside en Corin Vallend, que ha consolidado su dominio absoluto en el norte. El Rey Soren ha aprobado la unión y ha creado la Baronía del Valle Esmeralda para Sir Swayer Vallend, mientras el Ejército Real se prepara para la guerra.</p>
+<p>La represión no se hizo esperar: la <b>Defenestración de Lindhaven</b> dejó 50 muertos y 150 heridos cuando la Guardia Palatina inició registros violentos contra fieles de la Llama, arrojándolos por las ventanas. En las Mil Colinas, los seguidores de la Llama han desaparecido o se ocultan, y circulan rumores de que su práctica ha sido prohibida extraoficialmente. Mientras, el Rey Soren viajó a Lagerfreuer para velar a Lord Esmeril Brennen y se presentó sin previo aviso en el Septo de la Llama para entrevistarse con Hans Brennen, intentando rebajar las tensiones entre la Luz y la Llama antes de la guerra.</p>
 
-<p>La <b>Casa Brennen</b> ha declarado la movilización total: 9.000 carbones cruzan hacia el Muro de Fuego en lo que llaman "La Última Guerra". El Rey ha decretado el reclutamiento forzoso de 3.500 soldados y se ha creado el XII Batallón "Almogávar". La guerra con Stromgarde parece inevitable.</p>
+<p>En el norte, la <b>maniobra de Lord Corin Vallend</b> ha culminado con la integración de la Casa Dum como vasalla leal. Lo que pareció una invasión —Zdenek Dum capturando Bastión Dum y proclamándose "Verdadero Rey de las Tierras Altas"— fue en realidad una treta de Corin que fingió su propia captura para orquestar el retorno de los Dum del exilio y presentarse como el salvador que negoció su rendición. La Casa Dum recuperó las Tierras Altas como administrador vasallo, mientras Corin aseguró su lealtad, sus recursos alimenticios y el control absoluto del norte. El matrimonio de Avery Vallend con los Dum selló el pacto. El Rey Soren aprobó la unión y creó la Baronía del Valle Esmeralda para Sir Swayer Vallend, recompensando a los leales.</p>
 
-<p>Lord Inarus Stagger, Mano del Rey, ha sido el centro de controversias: desde el juicio político en septiembre hasta su implicación en la crisis del norte. La muerte de Lord Esmeril Brennen, antiguo Mano del Rey, ha dejado un vacío de poder que Stagger ha ocupado, pero no sin generar tensiones con las demás Casas.</p>
+<p>Declarada la guerra contra Stromgarde, el Rey y sus comandantes dividieron el frente oriental en cuatro grupos de batalla para cubrir las fortalezas del Muro de Fuego: el Grupo A (Miranthys, Kolbeck) en Las Tres Hermanas, el Grupo B (Vallend, Dum, Prestor) en Coraza de Abynn, el Grupo C (Valcrest, Perenolde, Othmar) en Lanza del Cuervo, y el Grupo E (Brennen, Montrose, Stanton) en Escudo de la Llama. Las tropas Vallend ya se movilizan hacia el sur para ocupar su posición y exigen Coraza de Abynn en exclusividad, mientras han ofrecido a Leiv Perenolde abandonar la ocupación de Strahnbrad a cambio de libre comercio en el Throndil. Corin, además, ha solicitado al Rey un decreto para crear la <b>Guardia del Reino</b>, un nuevo cuerpo militar-civil independiente del ERSM para asegurar la justicia en los territorios de interior.</p>
 
-<p>El <b>Torneo de las Tierras Altas</b> finalmente se celebró en octubre, con gladiadores de todo el reino, aunque empañado por el enfrentamiento entre Glover y Sir Adrien Valcrest en las mazmorras del castillo. La llegada de la Princesa Elaine-Katherine de Gilneas, que se esperaba para sellar una alianza, se ha visto comprometida tras el atentado contra su padre el Rey Archivald.</p>
+<p>La <b>Casa Brennen</b> ha declarado la movilización total: 9.000 carbones cruzan hacia el Muro de Fuego en lo que llaman "La Última Guerra". El Rey ha decretado el reclutamiento forzoso de 3.500 soldados y se ha creado el XII Batallón "Almogávar" bajo el mando de Sir Tarek Mujhabiir. La guerra con Stromgarde parece inevitable.</p>
 
-<p>Religiosamente, el reino está más dividido que nunca. El milagro del Arzobispo Theodosius en las Hinterlands atrajo a multitudes antes de su asesinato. Hans Brennen, el joven Sumo Sacerdote de la Llama de 16 años, consolida su poder mientras el Santo Fuego Grigor Ruskinovsky extiende su influencia desde Stromgarde. La persecución del Santo Fuego en Miranthys y la quema de aldeas como Keld, Arkaley y la Colonia Frederick por un ejército misterioso han sembrado el pánico en las regiones fronterizas.</p>
+<p><b>Lord Inarus Stagger</b>, postrado por sus heridas pero aún al mando como Mano del Rey, ha dictado desde su lecho un mensaje para la Princesa Elaine-Katherine ofreciendo el apoyo de las Mil Colinas a la Casa Ashbury, y ha enviado a su aliado en Kul Tiras una misión de confianza. Sir Spencer Falconcrest ha quedado al frente de las Mil Colinas y ha solicitado incrementar el ejército de 4.000 a 6.000 hombres. En Lindhaven rige un duunvirato entre Spencer y Sir Tomás Benavente bajo ley marcial, y se rumorea que Spencer ha desempolvado la legendaria espada celestial de los Falconcrest.</p>
 
-<p>El reino contiene la respiración. La calma que trajo la primavera ha dado paso a los vientos de guerra del otoño. La Mano del Rey ocupada, las fronteras ardiendo, y el trono de Alterac tambaleándose al borde de una guerra total contra Stromgarde.</p>`;
+<p>En la frontera oeste, la <b>Casa Filargenta de Gilneas</b> ha lanzado un ataque sorpresa contra el Frente Oscuro con 1.000 hombres armados con arietes y escalas. La guarnición de Stagger abandonó la posición, y Attaliates dejó una carta mordaz desafiándolos. Los Filargenta exigen la entrega del Rey Soren, la devolución de la Princesa Elaine, y peso y voto en el castigo de los culpables, amenazando con 5.000 hombres sobre Lindhaven si no se cumple.</p>
+
+<p><b>Lord Fernando Ayamonte</b> ha convocado a las Casas Othmar, Earglas y Stagger para coordinar la flota en la Isla del Purgatorio. Allí recibió a Lord Geffrey Ravenholdt, que negocia el rescate de su sobrino Sir Poldi Ravenholdt a cambio de información sobre el atentado. Un explorador llamado Félix Benavente arribó con la historia de una isla misteriosa —Zul'dare— llena de trols salvajes, hierro y oro.</p>
+
+<p>En las tierras <b>Miranthys</b>, las tormentas invernales dificultan las comunicaciones. Las fortalezas de la Hermana Menor continúan sus ampliaciones con túneles hacia las montañas. Cientos de ciudadanos huyen hacia El Quebrado buscando refugio, mientras Cassius, tras velar a Esmeril, ha vuelto a los preparativos bélicos. La Casa Kolbeck ha movilizado 3.200 soldados hacia Miranthys y enfrenta el rescate de 17 vasallos capturados por los Corsarios de Aral.</p>
+
+<p>Al otro lado del Muro de Fuego, en la Puerta de Aterratrols, una misteriosa luz parpadea cada noche en una ventana de las ruinas. Los guardias han confirmado que <b>responde a sus señales</b>, como si intentara comunicarse. En Stromgarde, la Reina Karynka ha iniciado la ofensiva de Noviembre contra las casas rebeldes, atacando el Bastión de la Cresta de la Casa Slowacky con 3.500 defensores.</p>
+
+<p>El reino contiene la respiración. El funeral de Esmeril congregó al Rey y a Cassius en Lagerfreuer, donde se sellaron los últimos acuerdos. Las fronteras arden y el trono de Alterac se tambalea al borde de la guerra total. La primavera de prosperidad ha dado paso al otoño de la tormenta definitiva.</p>`;
 
 const houseContents = {};
 houses.forEach(h => { houseContents[h.id] = h.content; });
+
+const consejo = `<div class="consejo-intro">
+  <p>La Corona gobierna todas las tierras, sobre las que cada casa noble tiene derechos pr&aacute;cticamente absolutos. El Consejo Real elabora las directrices por las que se rige el reino. Una orden de un consejero real equivale a una orden del Rey.</p>
+</div>
+
+<div class="consejo-grid">
+  <div class="consejo-row consejo-header">
+    <span class="consejo-rango">RANGO</span>
+    <span class="consejo-titular">TITULAR</span>
+    <span class="consejo-nota">NOTA</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Mano del Rey</span>
+    <span class="consejo-titular">Inarus Stagger</span>
+    <span class="consejo-nota">Herido grave en el atentado de Lindhaven</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Escriba Real</span>
+    <span class="consejo-titular">Cassius Miranthys</span>
+    <span class="consejo-nota">Anteriormente: Consejero de Diplomacia / Construcci&oacute;n</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejero del Dominio</span>
+    <span class="consejo-titular">Corin Vallend</span>
+    <span class="consejo-nota">Nuevo cargo. Interior, guardia, prisiones y justicia civil</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejera de Guerra</span>
+    <span class="consejo-titular">Angela Brennen</span>
+    <span class="consejo-nota">Sustituye a: Corin Vallend</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejero de Fronteras</span>
+    <span class="consejo-titular">Fenris Bathory</span>
+    <span class="consejo-nota">En representaci&oacute;n de Lady Miranda. Sustituye a: Angela Brennen</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejero Naval</span>
+    <span class="consejo-titular">Fernando Ayamonte</span>
+    <span class="consejo-nota">Anteriormente: Inarus Stagger</span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejero de Religi&oacute;n</span>
+    <span class="consejo-titular">Jack Kolbeck</span>
+    <span class="consejo-nota"></span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejera de Justicia</span>
+    <span class="consejo-titular">Brienne Valcrest</span>
+    <span class="consejo-nota"></span>
+  </div>
+
+  <div class="consejo-row">
+    <span class="consejo-rango">Consejero de la Moneda</span>
+    <span class="consejo-titular">Leiv Perenolde</span>
+    <span class="consejo-nota">Anteriormente: Darrek Othmar</span>
+  </div>
+
+  <div class="consejo-row consejo-vacante">
+    <span class="consejo-rango">Consejero de Esp&iacute;as</span>
+    <span class="consejo-titular">Sin asignar</span>
+    <span class="consejo-nota">Anteriormente: Geffrey Ravenholdt</span>
+  </div>
+
+  <div class="consejo-row consejo-vacante">
+    <span class="consejo-rango">Consejero de Propaganda</span>
+    <span class="consejo-titular">Sin asignar</span>
+    <span class="consejo-nota">Anteriormente: Leiv Perenolde</span>
+  </div>
+
+  <div class="consejo-row consejo-vacante">
+    <span class="consejo-rango">Consejero de Reclutamiento</span>
+    <span class="consejo-titular">Sin asignar</span>
+    <span class="consejo-nota">Anteriormente: Darrek Othmar (puesto abolido)</span>
+  </div>
+
+  <div class="consejo-row consejo-vacante">
+    <span class="consejo-rango">Consejero de Diplomacia</span>
+    <span class="consejo-titular">Sin asignar</span>
+    <span class="consejo-nota">Anteriormente: Jack Kolbeck (competencias asumidas por Fronteras)</span>
+  </div>
+
+  <div class="consejo-row consejo-vacante">
+    <span class="consejo-rango">Consejero de Eventos y Ceremonias</span>
+    <span class="consejo-titular">Sin asignar</span>
+    <span class="consejo-nota">Anteriormente: Cassius Miranthys</span>
+  </div>
+</div>
+
+<div class="consejo-extra">
+  <p><b>Boticaria Real:</b> Victoria Landra</p>
+</div>`;
 
 function renderHouses() {
   const grid = document.getElementById('housesGrid');
@@ -901,6 +1070,9 @@ function showView(view) {
   } else if (view === 'stromgarde') {
     document.getElementById('viewStromgarde').classList.add('active');
     document.getElementById('btnStromgarde').classList.add('active');
+  } else if (view === 'consejo') {
+    document.getElementById('viewConsejo').classList.add('active');
+    document.getElementById('btnConsejo').classList.add('active');
   }
 }
 
@@ -917,6 +1089,7 @@ function selectHouse(id) {
 document.getElementById('reinoContent').innerHTML = reino;
 document.getElementById('stromgardeContent').innerHTML = stromgarde;
 document.getElementById('ultimosContent').innerHTML = ultimos;
+document.getElementById('consejoContent').innerHTML = consejo;
 
 renderHouses();
 </script>
