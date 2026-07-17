@@ -17,6 +17,7 @@ const ANCHO_MAPA = 8192;
 const ALTO_MAPA  = 8192;
 const ARCHIVO_MAPA = 'mapa-base.png';
 const CAPAS_EXTRA = [];
+const TILE_VERSION = Date.now();
 
 const REGIONES = {
   alterac:    { label: 'Alterac',    ruta: 'Mapas/Alterac' },
@@ -24,7 +25,7 @@ const REGIONES = {
   lago:       { label: 'Lago',       ruta: 'Mapas/Lago' },
 };
 const TIPOS_CAPA = ['base', 'nombres', 'escudos'];
-const Z_CAPAS = { base: 101, nombres: 104, escudos: 100 };
+const Z_CAPAS = { base: 100, nombres: 101, escudos: 102 };
 const NOMBRES_REGION = Object.keys(REGIONES);
 let regionActiva = 'alterac';
 window.regionActiva = regionActiva;
@@ -66,24 +67,41 @@ function guardarReadsLocal(uid, data) {
 const bounds = [[0, 0], [ALTO_MAPA, ANCHO_MAPA]];
 const mapa = L.map('map', {
   crs: L.CRS.Simple,
-  minZoom: -1, maxZoom: 0, zoomSnap: 0.25,
+  minZoom: -3, maxZoom: 0, zoomSnap: 0.25,
   zoomControl: false,
   maxBounds: bounds,
   maxBoundsViscosity: 1.0,
 });
-mapa.setView([4565.0, 1922.0], -1);
+mapa.setView([4485.3, 3340.0], -1.75);
 window.mapa = mapa;
 
 function actualizarLimites() {
   if (regionActiva === 'alterac') {
+    mapa.setMinZoom(-1.75);
     var z = mapa.getZoom();
     var limX;
-    if (z <= -1) limX = 6780.0;
-    else if (z <= -0.25) limX = 6780.0 + (z + 1) / 0.75 * (6784.4 - 6780.0);
+    if (z <= -0.25) limX = 6780.0 + (z + 1) / 0.75 * (6784.4 - 6780.0);
     else limX = 6784.4 + (z + 0.25) / 0.25 * (6787.0 - 6784.4);
     mapa.setMaxBounds([[0, 0], [8192, limX]]);
+  } else if (regionActiva === 'stromgarde') {
+    mapa.setMinZoom(-2);
+    var z = mapa.getZoom();
+    var limY;
+    if (z <= -2) limY = 3524.0;
+    else if (z <= -1.25) limY = 3524.0 + (z + 2) / 0.75 * (3546.2 - 3524.0);
+    else if (z <= -0.5) limY = 3546.2 + (z + 1.25) / 0.75 * (3563.8 - 3546.2);
+    else limY = 3563.8 + (z + 0.5) / 0.5 * (3572.0 - 3563.8);
+    mapa.setMaxBounds([[limY, 0], [8192, 8192]]);
   } else {
-    mapa.setMaxBounds([[0, 0], [8192, 8192]]);
+    mapa.setMinZoom(-2);
+    var z = mapa.getZoom();
+    var limY;
+    if (z <= -2) limY = 3532.4;
+    else if (z <= -1.5) limY = 3532.4 + (z + 2) / 0.5 * (3541.5 - 3532.4);
+    else if (z <= -1.25) limY = 3541.5 + (z + 1.5) / 0.25 * (3553.6 - 3541.5);
+    else if (z <= -0.5) limY = 3553.6 + (z + 1.25) / 0.75 * (3568.2 - 3553.6);
+    else limY = 3568.2 + (z + 0.5) / 0.5 * (3572.1 - 3568.2);
+    mapa.setMaxBounds([[limY, 0], [8192, 8192]]);
   }
 }
 mapa.on('zoomend', actualizarLimites);
@@ -105,7 +123,7 @@ const MapaTileLayer = L.GridLayer.extend({
     if (px < 0 || px >= n || py < 0 || py >= n) {
       img.src = EMPTY_TILE;
     } else {
-      img.src = `${this._ruta}/${pz}/${px}/${py}.png`;
+      img.src = `${this._ruta}/${pz}/${px}/${py}.png?v=${TILE_VERSION}`;
     }
     img.onload  = () => done(null, img);
     img.onerror = () => { img.src = EMPTY_TILE; done(null, img); };
@@ -115,7 +133,7 @@ const MapaTileLayer = L.GridLayer.extend({
 function crearCapaTiles(ruta, zIndex) {
   return new MapaTileLayer(ruta, {
     tileSize: 256,
-    minZoom: -1, maxZoom: 0,
+    minZoom: -3, maxZoom: 0,
     zIndex, bounds, noWrap: true,
     keepBuffer: 0,
     updateWhenIdle: true,
@@ -161,6 +179,13 @@ function debeEstarVisible(datos) {
 
 window.cambiarRegion = function(nuevaRegion) {
   if (nuevaRegion === regionActiva) return;
+  // Guardar/restaurar estado de nombres al entrar/salir de Alterac
+  if (nuevaRegion === 'alterac') {
+    savedNombresState = estadoCapasRegion['nombres'];
+    estadoCapasRegion['nombres'] = false;
+  } else if (regionActiva === 'alterac') {
+    estadoCapasRegion['nombres'] = savedNombresState;
+  }
   // Quitar capas de la región anterior
   for (const tipo of TIPOS_CAPA) {
     mapa.removeLayer(capasRegion[regionActiva][tipo]);
@@ -176,6 +201,13 @@ window.cambiarRegion = function(nuevaRegion) {
   actualizarVisibilidadMarcas();
   if (window.actualizarVisibilidadPoligonos) window.actualizarVisibilidadPoligonos();
   actualizarLimites();
+  if (regionActiva === 'stromgarde') mapa.setView([5554.0, 4196.0], -2);
+  if (regionActiva === 'alterac') mapa.setView([4485.3, 3340.0], -1.75);
+  if (regionActiva === 'lago') mapa.setView([5882.0, 4352.0], -2);
+  // Actualizar UI del botón Nombres
+  btnNombres.className = regionActiva === 'alterac'
+    ? 'btn-capa activo'
+    : (estadoCapasRegion['nombres'] ? 'btn-capa activo' : 'btn-capa inactivo');
 };
 
 function actualizarVisibilidadMarcas() {
@@ -223,7 +255,27 @@ function crearFilaImagen(label, tipo, inicialActivo = true) {
 }
 
 capasControl.appendChild(crearFilaImagen('Escudos', 'escudos', false));
-capasControl.appendChild(crearFilaImagen('Nombres', 'nombres', false));
+// — Fila Nombres (en Alterac: siempre activo visual, nunca se muestra) —
+var savedNombresState = false;
+var btnNombres = document.createElement('button');
+btnNombres.className = regionActiva === 'alterac' ? 'btn-capa activo' : 'btn-capa inactivo';
+btnNombres.textContent = 'Nombres';
+btnNombres.addEventListener('click', () => {
+  if (regionActiva === 'alterac') return;
+  estadoCapasRegion['nombres'] = !estadoCapasRegion['nombres'];
+  const capa = capasRegion[regionActiva]['nombres'];
+  if (estadoCapasRegion['nombres']) {
+    capa.addTo(mapa);
+    btnNombres.classList.replace('inactivo', 'activo');
+  } else {
+    mapa.removeLayer(capa);
+    btnNombres.classList.replace('activo', 'inactivo');
+  }
+});
+const filaNombres = document.createElement('div');
+filaNombres.className = 'capa-fila';
+filaNombres.appendChild(btnNombres);
+capasControl.appendChild(filaNombres);
 capasControl.appendChild(crearFilaImagen('Mapa',    'base',    true));
 
 // — Fila Etiquetas (antes ocupaba Marcas) —
