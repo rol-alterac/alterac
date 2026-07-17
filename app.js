@@ -66,11 +66,29 @@ function guardarReadsLocal(uid, data) {
 const bounds = [[0, 0], [ALTO_MAPA, ANCHO_MAPA]];
 const mapa = L.map('map', {
   crs: L.CRS.Simple,
-  minZoom: -4, maxZoom: 0, zoomSnap: 0.25,
+  minZoom: -1, maxZoom: 0, zoomSnap: 0.25,
   zoomControl: false,
+  maxBounds: bounds,
+  maxBoundsViscosity: 1.0,
 });
-mapa.fitBounds(bounds);
+mapa.setView([4565.0, 1922.0], -1);
 window.mapa = mapa;
+
+function actualizarLimites() {
+  if (regionActiva === 'alterac') {
+    var z = mapa.getZoom();
+    var limX;
+    if (z <= -1) limX = 6780.0;
+    else if (z <= -0.25) limX = 6780.0 + (z + 1) / 0.75 * (6784.4 - 6780.0);
+    else limX = 6784.4 + (z + 0.25) / 0.25 * (6787.0 - 6784.4);
+    mapa.setMaxBounds([[0, 0], [8192, limX]]);
+  } else {
+    mapa.setMaxBounds([[0, 0], [8192, 8192]]);
+  }
+}
+mapa.on('zoomend', actualizarLimites);
+actualizarLimites();
+
 // — Capas de imagen (de abajo hacia arriba en el mapa) —
 const EMPTY_TILE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 const MapaTileLayer = L.GridLayer.extend({
@@ -97,7 +115,7 @@ const MapaTileLayer = L.GridLayer.extend({
 function crearCapaTiles(ruta, zIndex) {
   return new MapaTileLayer(ruta, {
     tileSize: 256,
-    minZoom: -4, maxZoom: 0,
+    minZoom: -1, maxZoom: 0,
     zIndex, bounds, noWrap: true,
     keepBuffer: 0,
     updateWhenIdle: true,
@@ -157,6 +175,7 @@ window.cambiarRegion = function(nuevaRegion) {
   }
   actualizarVisibilidadMarcas();
   if (window.actualizarVisibilidadPoligonos) window.actualizarVisibilidadPoligonos();
+  actualizarLimites();
 };
 
 function actualizarVisibilidadMarcas() {
